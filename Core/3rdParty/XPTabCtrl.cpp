@@ -217,6 +217,7 @@ void CXPTabCtrl::DoPaint(CDC* pDC)
 		uiFlags = uiVertBottm | (ixTab == ixHot ? 4 : 0);		// 4= hot
 		DrawThemesXpTabItem(pDC, ixTab, rcItem, uiFlags);
 	}
+
 	// 3rd paint the active selected tab
 	if (GetItemRect(ixSel, &rcItem))
 	{
@@ -230,11 +231,11 @@ void CXPTabCtrl::DoPaint(CDC* pDC)
 	}
 }
 
-
-//----------------------------------------------------------------------------------------------------------
-// This function draws Themes Tab control parts: a) Tab-Body and b) Tab-tabs
 void CXPTabCtrl::DrawThemesXpTabItem(CDC* pDC, int ixItem, const CRect& rcItem, UINT uiFlag)
 {			
+	// This function draws Themes Tab control parts: 
+	// a) Tab-Body and 
+	// b) Tab-tabs
 	BOOL bBody = (uiFlag & 1) ? TRUE : FALSE;
 	BOOL bSel = (uiFlag & 2) ? TRUE : FALSE;
 	BOOL bHot = (uiFlag & 4) ? TRUE : FALSE;
@@ -292,7 +293,7 @@ void CXPTabCtrl::DrawThemesXpTabItem(CDC* pDC, int ixItem, const CRect& rcItem, 
 	if (bBody && bBottom && !bVertic) 
 	{
 		nStart = 3;
-		nLenSub = 4;	// if bottom oriented flip the body contest only (no shadows were flipped)
+		nLenSub = 4; // if bottom oriented flip the body contest only (no shadows were flipped)
 	}
 
 	// 3rd if it is left oriented tab, draw tab context before mirroring or rotating (before GetDIBits)
@@ -306,49 +307,52 @@ void CXPTabCtrl::DrawThemesXpTabItem(CDC* pDC, int ixItem, const CRect& rcItem, 
 			if (bSel) 
 				rcMem.bottom--;
 
-			DrawTabItem(&dcMem, ixItem, rcMem, uiFlag); ixItem = -1;
+			DrawTabItem(&dcMem, ixItem, rcMem, uiFlag); 
+			ixItem = -1;
 		}
 	}
 
-	// 4th get bits (for rotate) and mirror: body=(all except top) tab=(all except top)
+	// 4th get bits (for rotate) and mirror: 
+	// body = (all except top) 
+	// tab = (all except top)
 	if (bVertic || bBottom)										
 	{
 		// get bits: 
 		GetDIBits(*pDC, bmpMem, nStart, szBmp.cy - nLenSub, pcImg, &biOut, DIB_RGB_COLORS);
 
-		if (bBottom)									// mirror: body=(bottom and right) tab=(bottom and right)
+		if (bBottom) // mirror: body=(bottom and right) tab=(bottom and right)
 		{
-			bihOut.biHeight = -szBmp.cy; 				// to mirror bitmap is enough to use negative height between Get/SetDIBits
+			bihOut.biHeight = -szBmp.cy; // to mirror bitmap is enough to use negative height between Get/SetDIBits
 			SetDIBits(*pDC, bmpMem, nStart, szBmp.cy - nLenSub, pcImg, &biOut, DIB_RGB_COLORS);
 
-			if (bBody && bVertic)					// when it is right oriented body -> flip twice, first flip border shadows, than flip shaded inside body again
+			if (bBody && bVertic) // when it is right oriented body -> flip twice, first flip border shadows, than flip shaded inside body again
 			{
 				nStart = 2; nLenSub = 4; bihOut.biHeight = szBmp.cy;
 				GetDIBits(*pDC, bmpMem, nStart, szBmp.cy - nLenSub, pcImg, &biOut, DIB_RGB_COLORS);
 
-				bihOut.biHeight = -szBmp.cy;			// to mirror bitmap is enough to use negative height between Get/SetDIBits
+				bihOut.biHeight = -szBmp.cy; // to mirror bitmap is enough to use negative height between Get/SetDIBits
 				SetDIBits(*pDC, bmpMem, nStart, szBmp.cy - nLenSub, pcImg, &biOut, DIB_RGB_COLORS);
 			}
 		}
 	}
 	
 	// 5th if it is bottom or right oriented tab, draw after mirroring background (do GetDIBits again)
-	if (!bBody && ixItem >= 0)							// 
+	if (!bBody && ixItem >= 0)
 	{
 		if (bSel) 
 			rcMem.bottom--;
 
 		DrawTabItem(&dcMem, ixItem, rcMem, uiFlag);
 
-		if (bVertic)											// if it is right tab, do GetDIBits again
+		if (bVertic) // if it is right tab, do GetDIBits again
 		{
 			bihOut.biHeight = -szBmp.cy;
 			GetDIBits(*pDC, bmpMem, nStart, szBmp.cy - nLenSub, pcImg, &biOut, DIB_RGB_COLORS);
 		}
 	}
 	
-	// 6th: do rotate now, finaly
-	if (bVertic)							// force rotating bitmap as RGB -> good for any resolution
+	// 6th: do rotate now, finally
+	if (bVertic) // force rotating bitmap as RGB -> good for any resolution
 	{
 		SwapVars(szBmp.cx, szBmp.cy);
 
@@ -362,8 +366,10 @@ void CXPTabCtrl::DrawThemesXpTabItem(CDC* pDC, int ixItem, const CRect& rcItem, 
 		int nWidth, nHeight = szBmp.cy, nHeight1 = nHeight - 1;
 
 		// here is the example how to speed up lengthy repeatetive processing by using inline assembler
-#define __USE_MASM__		// the same processing is in C and in asm. To use C -> comment the beginning of this line
-							// Do the actual whole RGB bitmap rotating in C or assembler
+		// the same processing is in C and in asm. To use C -> comment the beginning of this line
+		// Do the actual whole RGB bitmap rotating in C or assembler
+#define __USE_MASM__
+
 #ifndef __USE_MASM__
 		LPBYTE pcImgS = pcImg;
 		LPBYTE pcImgD = pcImgRotate;
@@ -502,7 +508,7 @@ void CXPTabCtrl::DrawTabItem(CDC* pDC, int ixItem, const CRect& rcItemC, UINT ui
 		// let derived classes override
 		rcItem = GetTabTextRect(ixItem, rcItem);
 
-		pDC->DrawText(sText, rcItem, (DT_NOPREFIX | DT_CENTER | DT_BOTTOM/* | DT_RTLREADING*/));
+		pDC->DrawText(sText, rcItem, (DT_NOPREFIX | DT_CENTER | DT_BOTTOM));
 		pDC->SelectObject(pOldFont);
 	}
 
@@ -570,21 +576,22 @@ int CXPTabCtrl::DWordAlign(int n)
 }
 
 BOOL IsThemeActiveEx()
-{								// check theme activity always (could change during application running)
-	HINSTANCE hDll = LoadLibrary(IDS_UTIL_UXTHEME);							// 'UxTheme.dll'
+{							
+	// check theme activity always (could change during application running)
+	HINSTANCE hDll = LoadLibrary(IDS_UTIL_UXTHEME);
 
 	if (hDll == NULL) 
-		return FALSE;				// the DLL won't be available on anything except Windows XP
+		return FALSE; // the DLL won't be available on anything except Windows XP
 
 	UINT(PASCAL *pfnIsThemeActive)();
-	(FARPROC&)pfnIsThemeActive = GetProcAddress(hDll, IDS_UTIL_THEMEACT);	// 'IsThemeActive'
+	(FARPROC&)pfnIsThemeActive = GetProcAddress(hDll, IDS_UTIL_THEMEACT);
 
 	UINT uiThemeActive = (pfnIsThemeActive ? pfnIsThemeActive() : 0);
 
 	if (uiThemeActive)
 	{
 		DWORD(PASCAL *pfnGetThemeAppProperties)();
-		(FARPROC&)pfnGetThemeAppProperties = GetProcAddress(hDll, IDS_UTIL_THEMEAPPPROPS);	// 'GetAppThemeProperties'
+		(FARPROC&)pfnGetThemeAppProperties = GetProcAddress(hDll, IDS_UTIL_THEMEAPPPROPS);
 
 		if (pfnGetThemeAppProperties)
 			uiThemeActive = (pfnGetThemeAppProperties() & STAP_ALLOW_CONTROLS);
@@ -602,11 +609,14 @@ DWORD GetWinVersion()
 
 	if (!c_dwWinVers)
 	{
-		OSVERSIONINFO osvi;	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));	// Initialize the OSVERSIONINFO structure.
+		OSVERSIONINFO osvi;	
+		ZeroMemory(&osvi, sizeof(OSVERSIONINFO));	// Initialize the OSVERSIONINFO structure.
+
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		GetVersionEx(&osvi);
 		c_dwWinVers = PACKVERSION(osvi.dwMajorVersion, osvi.dwMinorVersion);
 	}
+
 	return c_dwWinVers;
 }
 
@@ -626,13 +636,13 @@ HRESULT CXPTabCtrl::DrawThemesPart(HDC hDC, int iPartId, int iStateId, LPCTSTR u
 	if (!IsWinXP())
 		return E_FAIL;
 
-	HINSTANCE hDll = LoadLibrary(IDS_UTIL_UXTHEME);								// 'UxTheme.dll'
+	HINSTANCE hDll = LoadLibrary(IDS_UTIL_UXTHEME);
 
 	if (!hDll)
 		return E_FAIL;
 
 	BOOL(PASCAL* pfnIsThemeActive)();
-	(FARPROC&)pfnIsThemeActive = GetProcAddress(hDll, IDS_UTIL_THEMEACT);		// 'IsThemeActive'
+	(FARPROC&)pfnIsThemeActive = GetProcAddress(hDll, IDS_UTIL_THEMEACT);
 
 	HRESULT hResult = E_FAIL;
 
@@ -648,14 +658,14 @@ HRESULT CXPTabCtrl::DrawThemesPart(HDC hDC, int iPartId, int iStateId, LPCTSTR u
 			MultiByteToWideChar(CP_ACP, 0, (LPCTSTR)sPartName, -1, swPartName, sizeof(swPartName) / sizeof(WCHAR));
 #endif
 			UINT(PASCAL* pfnOpenThemeData)(HWND hwnd, LPCWSTR pszClassList);
-			(FARPROC&)pfnOpenThemeData = GetProcAddress(hDll, IDS_UTIL_THEMEOPN);// 'OpenThemeData'
+			(FARPROC&)pfnOpenThemeData = GetProcAddress(hDll, IDS_UTIL_THEMEOPN);
 
 			UINT hTheme = 0;
 
 			if (pfnOpenThemeData && (hTheme = pfnOpenThemeData(NULL, swPartName)) != 0)
 			{
 				UINT(PASCAL* pfnDrawThemeBackground)(UINT htheme, HDC hdc, int iPartID, int iStateID, const RECT* prcBx, const RECT* prcClip);
-				(FARPROC&)pfnDrawThemeBackground = GetProcAddress(hDll, IDS_UTIL_THEMEBCKG);	// 'DrawThemeBackground'
+				(FARPROC&)pfnDrawThemeBackground = GetProcAddress(hDll, IDS_UTIL_THEMEBCKG);
 
 				if (pfnDrawThemeBackground)
 					hResult = pfnDrawThemeBackground(hTheme, hDC, iPartId, iStateId, prcBox, NULL);
