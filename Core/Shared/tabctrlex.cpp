@@ -922,7 +922,7 @@ BOOL CTabCtrlEx::GetTabCloseButtonRect(int nTab, CRect& rBtn) const
 		if (bSel)
 			rBtn.OffsetRect(0, 1);
 		else
- 			rBtn.OffsetRect(-2, 3);
+ 			rBtn.OffsetRect(-2, 2);
 		break;
 
 	case e_tabBottom:

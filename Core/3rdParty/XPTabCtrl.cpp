@@ -152,7 +152,7 @@ void CXPTabCtrl::DoPaint(CDC* pDC)
 		pDC->ExcludeClipRect(rSpin);
 
 	pDC->GetClipBox(rcClip);
-	pDC->FillSolidRect(rcClip, m_crBkgnd);
+	//pDC->FillSolidRect(rcClip, m_crBkgnd);
 
 	// 1st paint the tab body
 	CRect rcPage, rcItem, rcClient;
@@ -160,6 +160,7 @@ void CXPTabCtrl::DoPaint(CDC* pDC)
 
 	rcClient = rcPage;
 	AdjustRect(FALSE, rcPage);
+	pDC->FillSolidRect(rcClient, m_crBkgnd);
 
 	switch (m_eTabOrientation)
 	{
@@ -451,6 +452,8 @@ void CXPTabCtrl::DrawThemesXpTabItem(CDC* pDC, int ixItem, const CRect& rcItem, 
 
 void CXPTabCtrl::DrawTabItem(CDC* pDC, int ixItem, const CRect& rcItemC, UINT uiFlags)
 {
+//	pDC->FillSolidRect(rcItemC, 255);
+
 	CString sText;
 
 	TC_ITEM tci = { 0 };   
@@ -463,20 +466,15 @@ void CXPTabCtrl::DrawTabItem(CDC* pDC, int ixItem, const CRect& rcItemC, UINT ui
 	sText.ReleaseBuffer();
 	sText.TrimRight();
 
-	BOOL bSel = (uiFlags & 2) ? TRUE : FALSE;
-	BOOL bBottom = (uiFlags & 8) ? TRUE : FALSE;
+	BOOL bSel = (uiFlags & 2);
+	BOOL bBottom = (uiFlags & 8);
 	CRect rcItem = rcItemC;
 
-	if (bSel) 
-		rcItem.bottom -= 1;
-	else	 
-		rcItem.bottom += 2;
-
-	rcItem.left += (bBottom ? 3 : 6); // text & icon
-	rcItem.top += (bBottom ? 3 : 2) + (bSel ? 1 : (bBottom ? 0 : 3));
+	rcItem.bottom += (bSel ? -1 : 0);
+	rcItem.DeflateRect(3, 0);
 
 	int nOldMode = pDC->SetBkMode(TRANSPARENT);
-	HIMAGELIST hilTabs = (HIMAGELIST)TabCtrl_GetImageList(GetSafeHwnd());	// icon
+	HIMAGELIST hilTabs = (HIMAGELIST)TabCtrl_GetImageList(GetSafeHwnd());
 
 	if (hilTabs && tci.iImage >= 0)
 	{
@@ -484,31 +482,30 @@ void CXPTabCtrl::DrawTabItem(CDC* pDC, int ixItem, const CRect& rcItemC, UINT ui
 		ImageList_GetIconSize(hilTabs, &cx, &cy);
 
 		CRect rImage(rcItem);
-		rImage.top += (((rImage.Height() - cy) / 2) - 2);
+
+		if (bBottom && bSel)
+			rImage.OffsetRect(0, 2);
 
 		ImageList_Draw(hilTabs, tci.iImage, *pDC, rImage.left, rImage.top, ILD_TRANSPARENT);
 		rcItem.left += (cx + 3);
-	}
-	else 
-	{
-		rcItem.OffsetRect(-2, 0);
 	}
 
 	if (sText.GetLength())
 	{
 		CFont* pOldFont = pDC->SelectObject(GetTabFont(ixItem)); // prepare dc
 
-		rcItem.right -= 3;
-
-		if (bBottom)
-			rcItem.OffsetRect(-1, (bSel ? 1 : 0));
-		else
-			rcItem.OffsetRect(0, (bSel ? 1 : -1));
+		if (bBottom && !bSel)
+			rcItem.OffsetRect(0, -1);
 
 		// let derived classes override
 		rcItem = GetTabTextRect(ixItem, rcItem);
+		CRect rcText(rcItem);
+		pDC->DrawText(sText, rcText, (DT_NOPREFIX | DT_CALCRECT));
 
-		pDC->DrawText(sText, rcItem, (DT_NOPREFIX | DT_CENTER | DT_BOTTOM));
+		rcText.OffsetRect((rcItem.Width() - rcText.Width()) / 2, (rcItem.Height() - rcText.Height()) / 2);
+//		pDC->FillSolidRect(rcText, RGB(0, 255, 0));
+
+		pDC->DrawText(sText, rcText, DT_NOPREFIX);
 		pDC->SelectObject(pOldFont);
 	}
 
