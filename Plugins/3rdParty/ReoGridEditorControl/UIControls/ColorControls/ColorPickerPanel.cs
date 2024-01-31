@@ -34,6 +34,10 @@ namespace unvell.UIControls
 
 		private AbstractColor currentColor;
 
+		public static string NoColor = ReoGrid.Editor.LangRes.LangResource.NoColor;
+		public static string MoreColors = ReoGrid.Editor.LangRes.LangResource.Menu_More;
+		public static string SolidTab = ReoGrid.Editor.LangRes.LangResource.SolidColor;
+
 		public AbstractColor CurrentColor
 		{
 			get
@@ -92,7 +96,7 @@ namespace unvell.UIControls
 
 			tab = new FlatTabControl();
 			tab.TabStop = false;
-			tab.Tabs = new string[] { unvell.ReoGrid.Editor.LangRes.LangResource.SolidColor };
+			tab.Tabs = new string[] { SolidTab };
 			tab.Size = new Size(ClientRectangle.Width, 20);
 			tab.Dock = DockStyle.Top;
 			tab.SelectedBackColor = backColor;
@@ -386,7 +390,7 @@ namespace unvell.UIControls
 
 				g.DrawRectangle(SystemPens.WindowText, 8, 116, 14, 14);
 				g.DrawLine(SystemPens.WindowText, 8, 130, 22, 116);
-				g.DrawString(ReoGrid.Editor.LangRes.LangResource.NoColor, Font,
+				g.DrawString(ColorPickerPanel.NoColor, Font,
 					index == hoverColorIndex ?
 					SystemBrushes.HighlightText : SystemBrushes.WindowText,
 					new Rectangle(26, 116, 60, 20));
@@ -412,7 +416,7 @@ namespace unvell.UIControls
 				g.FillRectangle(b, 100, 116, 14, 14);
 
 				g.DrawRectangle(SystemPens.WindowText, 100, 116, 14, 14);
-				g.DrawString(ReoGrid.Editor.LangRes.LangResource.Menu_More, Font,
+				g.DrawString(ColorPickerPanel.MoreColors, Font,
 					index == hoverColorIndex ?
 					SystemBrushes.HighlightText : SystemBrushes.WindowText,
 					new Rectangle(118, 116, 60, 20));
@@ -523,18 +527,21 @@ namespace unvell.UIControls
 		{
 			if (i < 0)
 				return Color.Empty;
-			else if (i < 40)
+
+			if (i < 40)
 				return GetTranparentedColor(fixedColor[(i / 5), i % 5]);
-			else if (i == 40)
+
+			if (i == 40)
 				return Color.Empty;
-			else if (i == 41)
-			{
+
+			if (i == 41)
 				return Color.Empty;
-			}
-			else if (i <= 49)
+
+			if (i <= 49)
 				return recentColor[i - 42];
-			else
-				return Color.Empty;
+
+			// else
+			return Color.Empty;
 		}
 
 		private int GetIndexByColor(Color color)
