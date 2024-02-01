@@ -35,6 +35,11 @@ namespace unvell.UIControls
 				m_DpiFactor = new SizeF(g.DpiX / 96, g.DpiY / 96);
 		}
 
+		public Scaler(Graphics g)
+		{
+			m_DpiFactor = new SizeF(g.DpiX / 96, g.DpiY / 96);
+		}
+
 		public int X(int value)
 		{
 			return (int)(value * m_DpiFactor.Width);
@@ -376,7 +381,7 @@ namespace unvell.UIControls
 														Color.FromArgb(  0,  0,255),
 														Color.FromArgb(  0,  0,153),
 														Color.FromArgb(  0,  0, 70),
-														}, { // maginate
+														}, { // magenta
 														Color.FromArgb(255,238,255),
 														Color.FromArgb(255,210,255),
 														Color.FromArgb(255,  0,255),
@@ -436,10 +441,12 @@ namespace unvell.UIControls
 
 				g.DrawRectangle(SystemPens.WindowText, scaler.Rect(8, 116, 14, 14));
 				g.DrawLine(SystemPens.WindowText, scaler.Point(8, 130), scaler.Point(22, 116));
+
 				g.DrawString(ColorPickerPanel.NoColor, Font,
 					index == hoverColorIndex ?
 					SystemBrushes.HighlightText : SystemBrushes.WindowText,
-					scaler.Rect(26, 116, 60, 20));
+					scaler.Rect(26, 116, 60, 20),
+					new StringFormat() { FormatFlags = StringFormatFlags.NoClip | StringFormatFlags.NoWrap });
 
 				// more 
 				index++;

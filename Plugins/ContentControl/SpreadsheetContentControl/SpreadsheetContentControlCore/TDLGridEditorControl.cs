@@ -220,7 +220,7 @@ namespace SpreadsheetContentControl
 			m_Trans.Translate(ColumnContextMenu.Items);
 
 			// Handle the 3rd-party components embedded in the toolbar
-			unvell.UIControls.ColorPickerPanel.NoColor = m_Trans.Translate("No Colour");
+			unvell.UIControls.ColorPickerPanel.NoColor = m_Trans.Translate("None");
 			unvell.UIControls.ColorPickerPanel.MoreColors = m_Trans.Translate("More...");
 			unvell.UIControls.ColorPickerPanel.SolidTab = m_Trans.Translate("Solid");
 		}

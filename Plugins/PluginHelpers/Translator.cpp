@@ -115,7 +115,8 @@ void Translator::Translate(ToolStripItemCollection^ items)
 			{
 				Translate(dropItem->DropDown); // RECURSIVE CALL
 			}
-			else if (dropItem->HasDropDownItems)
+
+			if (dropItem->HasDropDownItems)
 			{
 				Translate(dropItem->DropDownItems); // RECURSIVE CALL
 			}
