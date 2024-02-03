@@ -49,7 +49,7 @@ BEGIN
             VALUE "FileDescription", "ToDoList\0"
             VALUE "FileVersion", "8, 2, 999, 3\0"
             VALUE "InternalName", "ToDoList\0"
-            VALUE "LegalCopyright", "Copyright (c) AbstractSpoon 2003-23\0"
+            VALUE "LegalCopyright", "Copyright (c) AbstractSpoon 2003-24\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ToDoList.exe\0"
             VALUE "PrivateBuild", "\0"
