@@ -124,7 +124,7 @@ namespace unvell.UIControls
 
 		private Panel panel;
 
-		public ColorPickerPanel(Color backColor, bool scaleTabHeight = false)
+		public ColorPickerPanel(Color backColor)
 			: 
 			base()
 		{
@@ -144,14 +144,16 @@ namespace unvell.UIControls
 			tab = new FlatTabControl();
 			tab.TabStop = false;
 			tab.Tabs = new string[] { SolidTab };
+			tab.Size = new Size(ClientRectangle.Width, 20);
 			tab.Dock = DockStyle.Top;
 			tab.SelectedBackColor = backColor;
 			tab.SelectedIndexChanged += (s, e) => panels[tab.SelectedIndex].BringToFront();
 
-			if (scaleTabHeight)
-				tab.Size = new Size(ClientRectangle.Width, scaler.Y(20));
-			else
-				tab.Size = new Size(ClientRectangle.Width, 20);
+			this.ParentChanged += (s, e) => 
+			{
+				if (this.Parent is ColorPickerWindow)
+					tab.Size = new Size(tab.Size.Width, scaler.Y(20));
+			};
 
 			Controls.Add(tab);
 			Controls.Add(panel);
