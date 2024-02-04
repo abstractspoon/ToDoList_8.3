@@ -66,13 +66,14 @@ namespace SpreadsheetContentControl
 		{
 			m_toolbarRenderer = new UIThemeToolbarRenderer();
 			m_ControlsFont = font;
+			m_Trans = trans;
 
 			HyperlinkCell.LinkColor = HyperlinkCell.ActivateColor = HyperlinkCell.VisitedColor = SystemColors.HotTrack;
 
 			InitialiseFeatures();
 			InitialiseToolbars();
 			InitialiseChangeCallbacks();
-			TranslateUI(trans);
+			TranslateUI();
 
 			Worksheet.DefaultFontName = m_ControlsFont.Name;
 			Worksheet.DefaultFontSize = m_ControlsFont.SizeInPoints;
@@ -206,17 +207,15 @@ namespace SpreadsheetContentControl
 			return true;
 		}
 
-		private void TranslateUI(Translator trans)
+		private void TranslateUI()
 		{
-			trans.Translate(MenuBar.Items);
-			trans.Translate(ToolBar.Items);
-			trans.Translate(FontBar.Items);
-			// trans.Translate(FormulaBar.Items);
-			// trans.Translate(StatusBar.Items);
-			trans.Translate(RowContextMenu.Items);
-			trans.Translate(CellContextMenu.Items);
-			trans.Translate(HeaderContextMenu.Items);
-			trans.Translate(ColumnContextMenu.Items);
+			m_Trans.Translate(MenuBar.Items);
+			m_Trans.Translate(ToolBar.Items);
+			m_Trans.Translate(FontBar.Items);
+			m_Trans.Translate(RowContextMenu.Items);
+			m_Trans.Translate(CellContextMenu.Items);
+			m_Trans.Translate(HeaderContextMenu.Items);
+			m_Trans.Translate(ColumnContextMenu.Items);
 		}
 
 		private CellDataFormatFlag GetCellFormat(Cell cell, out string dateFormatStr)
