@@ -119,6 +119,7 @@ namespace unvell.ReoGrid.Editor
 			this.MinimizeBox = false;
 			this.Name = "RunFunctionForm";
 			this.ShowIcon = false;
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Run Function";
 			this.ResumeLayout(false);
