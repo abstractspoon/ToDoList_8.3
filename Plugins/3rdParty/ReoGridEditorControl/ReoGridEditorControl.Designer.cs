@@ -1043,7 +1043,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashRightSolidToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_right_solid;
 			this.slashRightSolidToolStripMenuItem.Name = "slashRightSolidToolStripMenuItem";
-			this.slashRightSolidToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashRightSolidToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashRightSolidToolStripMenuItem.Text = "Solid";
 			this.slashRightSolidToolStripMenuItem.Click += new System.EventHandler(this.slashRightSolidToolStripMenuItem_Click);
 			// 
@@ -1051,7 +1051,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashRightBoldToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_right_blod;
 			this.slashRightBoldToolStripMenuItem.Name = "slashRightBoldToolStripMenuItem";
-			this.slashRightBoldToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashRightBoldToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashRightBoldToolStripMenuItem.Text = "Bold";
 			this.slashRightBoldToolStripMenuItem.Click += new System.EventHandler(this.slashRightBoldToolStripMenuItem_Click);
 			// 
@@ -1059,7 +1059,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashRightDotToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_right_dot;
 			this.slashRightDotToolStripMenuItem.Name = "slashRightDotToolStripMenuItem";
-			this.slashRightDotToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashRightDotToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashRightDotToolStripMenuItem.Text = "Dotted";
 			this.slashRightDotToolStripMenuItem.Click += new System.EventHandler(this.slashRightDotToolStripMenuItem_Click);
 			// 
@@ -1067,7 +1067,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashRightDashToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_right_dash;
 			this.slashRightDashToolStripMenuItem.Name = "slashRightDashToolStripMenuItem";
-			this.slashRightDashToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashRightDashToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashRightDashToolStripMenuItem.Text = "Dashed";
 			this.slashRightDashToolStripMenuItem.Click += new System.EventHandler(this.slashRightDashToolStripMenuItem_Click);
 			// 
@@ -1092,7 +1092,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashLeftSolidToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_left_solid;
 			this.slashLeftSolidToolStripMenuItem.Name = "slashLeftSolidToolStripMenuItem";
-			this.slashLeftSolidToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashLeftSolidToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashLeftSolidToolStripMenuItem.Text = "Solid";
 			this.slashLeftSolidToolStripMenuItem.Click += new System.EventHandler(this.slashLeftSolidToolStripMenuItem_Click);
 			// 
@@ -1100,7 +1100,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashLeftBoldToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_left_blod;
 			this.slashLeftBoldToolStripMenuItem.Name = "slashLeftBoldToolStripMenuItem";
-			this.slashLeftBoldToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashLeftBoldToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashLeftBoldToolStripMenuItem.Text = "Bold";
 			this.slashLeftBoldToolStripMenuItem.Click += new System.EventHandler(this.slashLeftBoldToolStripMenuItem_Click);
 			// 
@@ -1108,7 +1108,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashLeftDotToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_left_dot;
 			this.slashLeftDotToolStripMenuItem.Name = "slashLeftDotToolStripMenuItem";
-			this.slashLeftDotToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashLeftDotToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashLeftDotToolStripMenuItem.Text = "Dotted";
 			this.slashLeftDotToolStripMenuItem.Click += new System.EventHandler(this.slashLeftDotToolStripMenuItem_Click);
 			// 
@@ -1116,7 +1116,7 @@ namespace unvell.ReoGrid.Editor
 			// 
 			this.slashLeftDashToolStripMenuItem.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_left_solid;
 			this.slashLeftDashToolStripMenuItem.Name = "slashLeftDashToolStripMenuItem";
-			this.slashLeftDashToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.slashLeftDashToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
 			this.slashLeftDashToolStripMenuItem.Text = "Dashed";
 			this.slashLeftDashToolStripMenuItem.Click += new System.EventHandler(this.slashLeftDashToolStripMenuItem_Click);
 			// 
@@ -1656,7 +1656,7 @@ namespace unvell.ReoGrid.Editor
 			this.fontToolStripComboBox.Name = "fontToolStripComboBox";
 			this.fontToolStripComboBox.Size = new System.Drawing.Size(160, 25);
 			this.fontToolStripComboBox.Text = "Segoe UI";
-			this.fontToolStripComboBox.ToolTipText = "Change font";
+			this.fontToolStripComboBox.ToolTipText = "Font Name";
 			this.fontToolStripComboBox.SelectedIndexChanged += new System.EventHandler(this.fontToolStripComboBox_SelectedIndexChanged);
 			// 
 			// fontSizeToolStripComboBox
@@ -1666,7 +1666,7 @@ namespace unvell.ReoGrid.Editor
 			this.fontSizeToolStripComboBox.Name = "fontSizeToolStripComboBox";
 			this.fontSizeToolStripComboBox.Size = new System.Drawing.Size(40, 23);
 			this.fontSizeToolStripComboBox.Text = "8";
-			this.fontSizeToolStripComboBox.ToolTipText = "Change font size";
+			this.fontSizeToolStripComboBox.ToolTipText = "Font Size";
 			this.fontSizeToolStripComboBox.TextChanged += new System.EventHandler(this.fontSizeToolStripComboBox_TextChanged);
 			// 
 			// enlargeFontToolStripButton
