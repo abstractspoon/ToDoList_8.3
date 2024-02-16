@@ -1554,6 +1554,7 @@ int CTDLFindTasksDlg::LoadSearches()
 		}
 	}
 
+/*
 	// Delete obsolete searches
 	CStringArray aSearchSectons;
 	int nSection = prefs.GetProfileSectionNames(aSearchSectons, _T("FindTasks\\Searches\\"));
@@ -1590,6 +1591,7 @@ int CTDLFindTasksDlg::LoadSearches()
 		if (nSaved == -1)
 			prefs.DeleteProfileSection(sSection);
 	}
+*/
 	
 	// restore last named search
 	CString sSearch = prefs.GetProfileString(_T("FindTasks\\Searches"), _T("Current"));
@@ -1693,6 +1695,10 @@ void CTDLFindTasksDlg::OnDeleteSearch()
 		m_cbSearches.DeleteString(nSearch);
 
 	Misc::RemoveItem(sDeletedSearch, m_aSavedSearches);
+
+	CString sSection;
+	sSection.Format(_T("FindTasks\\Searches\\%s"), sDeletedSearch);
+	CPreferences().DeleteProfileSection(sSection, TRUE);
 
 	m_lcFindSetup.ClearSearch();
 
