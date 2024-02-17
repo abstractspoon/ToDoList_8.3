@@ -1073,12 +1073,30 @@ namespace SpreadsheetContentControl
 			dialog.ShowIcon = true;
 
 			// Per dialog customisations
-// 			if (ISTYPE(dialog, ))
+// 			if (dialog is ...))
 // 			{
 // 			}
 // 			else // all others
 			{
 				m_Trans.Translate(dialog);
+			}
+
+			Win32.ActivateApp(Handle);
+
+			return base.ShowDialog(dialog);
+		}
+
+		protected override DialogResult ShowDialog(CommonDialog dialog)
+		{
+			// Per dialog customisations
+			if (dialog is FileDialog)
+			{
+				var fileDlg = (dialog as FileDialog);
+				fileDlg.Filter = m_Trans.Translate(fileDlg.Filter);
+			}
+			else // all others
+			{
+				// TODO
 			}
 
 			Win32.ActivateApp(Handle);
