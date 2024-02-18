@@ -240,9 +240,9 @@ namespace SpreadsheetContentControl
 			LanguageResource.CellDataFormat_Currency = m_Trans.Translate(LanguageResource.CellDataFormat_Currency);
 			LanguageResource.CellDataFormat_Text = m_Trans.Translate(LanguageResource.CellDataFormat_Text);
 
-	}
+		}
 
-	private CellDataFormatFlag GetCellFormat(Cell cell, out string dateFormatStr)
+		private CellDataFormatFlag GetCellFormat(Cell cell, out string dateFormatStr)
 		{
 			var formatType = ((cell == null) ? CellDataFormatFlag.General : cell.DataFormat);
 			dateFormatStr = string.Empty;
