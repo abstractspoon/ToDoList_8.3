@@ -232,9 +232,17 @@ namespace SpreadsheetContentControl
 			LanguageResource.Sheet = m_Trans.Translate(LanguageResource.Sheet);
 			LanguageResource.None = m_Trans.Translate(LanguageResource.None);
 			LanguageResource.Text = m_Trans.Translate(LanguageResource.Text);
-		}
 
-		private CellDataFormatFlag GetCellFormat(Cell cell, out string dateFormatStr)
+			LanguageResource.CellDataFormat_General = m_Trans.Translate(LanguageResource.CellDataFormat_General);
+			LanguageResource.CellDataFormat_Number = m_Trans.Translate(LanguageResource.CellDataFormat_Number);
+			LanguageResource.CellDataFormat_DateTime = m_Trans.Translate(LanguageResource.CellDataFormat_DateTime);
+			LanguageResource.CellDataFormat_Percent = m_Trans.Translate(LanguageResource.CellDataFormat_Percent);
+			LanguageResource.CellDataFormat_Currency = m_Trans.Translate(LanguageResource.CellDataFormat_Currency);
+			LanguageResource.CellDataFormat_Text = m_Trans.Translate(LanguageResource.CellDataFormat_Text);
+
+	}
+
+	private CellDataFormatFlag GetCellFormat(Cell cell, out string dateFormatStr)
 		{
 			var formatType = ((cell == null) ? CellDataFormatFlag.General : cell.DataFormat);
 			dateFormatStr = string.Empty;
