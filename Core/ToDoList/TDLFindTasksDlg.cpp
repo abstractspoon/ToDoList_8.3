@@ -11,6 +11,7 @@
 #include "..\shared\dlgunits.h"
 #include "..\shared\dialoghelper.h"
 #include "..\shared\misc.h"
+#include "..\shared\filemisc.h"
 #include "..\shared\graphicsmisc.h"
 #include "..\shared\themed.h"
 #include "..\shared\dlgunits.h"
@@ -1554,44 +1555,73 @@ int CTDLFindTasksDlg::LoadSearches()
 		}
 	}
 
-/*
-	// Delete obsolete searches
-	CStringArray aSearchSectons;
-	int nSection = prefs.GetProfileSectionNames(aSearchSectons, _T("FindTasks\\Searches\\"));
-
-	while (nSection--)
+	// Delete orphan searches/rules
 	{
-		const CString& sSection = aSearchSectons[nSection];
+		// TEMPORARY LOGGING
+		FileMisc::LogTextRaw(_T("DeleteOrphanRules(start)"));
 
-		if (sSection.Find(LAST_SEARCH) >= 0)
-			continue;
+		CStringArray aSearchSectons;
+		int nSection = prefs.GetProfileSectionNames(aSearchSectons, _T("FindTasks\\Searches\\"));
 
-		int nSectionLen = sSection.GetLength();
-		int nSaved = m_aSavedSearches.GetSize();
+		// TEMPORARY LOGGING
+		FileMisc::LogText(_T("CPreferences::GetProfileSectionNames() found %d sections"), nSection);
 
-		while (nSaved--)
+		while (nSection--)
 		{
-			const CString& sSaved = m_aSavedSearches[nSaved];
-			int nFind = sSection.Find(sSaved);
+			const CString& sSection = aSearchSectons[nSection];
 
-			if (nFind != -1)
+			if (sSection.Find(LAST_SEARCH) >= 0)
+				continue;
+
+			// TEMPORARY LOGGING
+			FileMisc::LogText(_T("DeleteOrphanRules(processing section %s)"), sSection);
+
+			int nSectionLen = sSection.GetLength();
+			int nSaved = m_aSavedSearches.GetSize();
+
+			while (nSaved--)
 			{
-				int nSavedLen = sSaved.GetLength();
+				const CString& sSaved = m_aSavedSearches[nSaved];
+				int nFind = sSection.Find(sSaved);
 
-				// We're interested in sections which either end in the saved name
-				if (nFind == (nSectionLen - nSavedLen))
-					break;
+				if (nFind != -1)
+				{
+					int nSavedLen = sSaved.GetLength();
 
-				// or which are followed immediately by a backslash, indicating a rule
-				if (((nFind + nSavedLen + 1) < nSectionLen) && sSection[nFind + nSavedLen] == '\\')
-					break;
+					// We're interested in sections which either end in the saved name
+					if (nFind == (nSectionLen - nSavedLen))
+					{
+						// TEMPORARY LOGGING
+						FileMisc::LogText(_T("\tDeleteOrphanRules(section matches saved search, %s)"), sSaved);
+						break;
+					}
+
+					// or which are followed immediately by a backslash, indicating a rule
+					if (((nFind + nSavedLen + 1) < nSectionLen) && sSection[nFind + nSavedLen] == '\\')
+					{
+						// TEMPORARY LOGGING
+						FileMisc::LogText(_T("\tDeleteOrphanRules(section matches saved search %s)"), sSaved);
+						break;
+					}
+				}
+			}
+
+			if (nSaved == -1)
+			{
+				// TEMPORARY LOGGING
+				FileMisc::LogText(_T("\t** DeleteOrphanRules(orphan = %s)"), sSection);
+
+				if (prefs.DeleteProfileSection(sSection))
+				{
+					// TEMPORARY LOGGING
+					FileMisc::LogText(_T("\t** CPreferences::DeleteProfileSection(%s)"), sSection);
+				}
 			}
 		}
 
-		if (nSaved == -1)
-			prefs.DeleteProfileSection(sSection);
+		// TEMPORARY LOGGING
+		FileMisc::LogTextRaw(_T("DeleteOrphanRules(end)"));
 	}
-*/
 	
 	// restore last named search
 	CString sSearch = prefs.GetProfileString(_T("FindTasks\\Searches"), _T("Current"));
