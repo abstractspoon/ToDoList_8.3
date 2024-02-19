@@ -78,9 +78,11 @@ namespace unvell.ReoGrid.PropertyPages
 			this.grpLine.Controls.Add(this.borderColorSelector);
 			this.grpLine.Controls.Add(this.borderStyleList);
 			this.grpLine.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.grpLine.Location = new System.Drawing.Point(16, 13);
+			this.grpLine.Location = new System.Drawing.Point(24, 20);
+			this.grpLine.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.grpLine.Name = "grpLine";
-			this.grpLine.Size = new System.Drawing.Size(173, 274);
+			this.grpLine.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+			this.grpLine.Size = new System.Drawing.Size(260, 422);
 			this.grpLine.TabIndex = 1;
 			this.grpLine.TabStop = false;
 			this.grpLine.Text = "Line Attributes";
@@ -89,9 +91,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// 
 			this.labStyle.AutoSize = true;
 			this.labStyle.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.labStyle.Location = new System.Drawing.Point(13, 27);
+			this.labStyle.Location = new System.Drawing.Point(20, 42);
+			this.labStyle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.labStyle.Name = "labStyle";
-			this.labStyle.Size = new System.Drawing.Size(33, 13);
+			this.labStyle.Size = new System.Drawing.Size(44, 20);
 			this.labStyle.TabIndex = 3;
 			this.labStyle.Text = "Style";
 			// 
@@ -99,9 +102,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// 
 			this.labColor.AutoSize = true;
 			this.labColor.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.labColor.Location = new System.Drawing.Point(13, 218);
+			this.labColor.Location = new System.Drawing.Point(20, 335);
+			this.labColor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.labColor.Name = "labColor";
-			this.labColor.Size = new System.Drawing.Size(34, 13);
+			this.labColor.Size = new System.Drawing.Size(55, 20);
 			this.labColor.TabIndex = 2;
 			this.labColor.Text = "Colour";
 			// 
@@ -110,9 +114,10 @@ namespace unvell.ReoGrid.PropertyPages
 			this.borderColorSelector.BackColor = System.Drawing.SystemColors.Window;
 			this.borderColorSelector.CloseOnClick = true;
 			this.borderColorSelector.dropdown = false;
-			this.borderColorSelector.Location = new System.Drawing.Point(16, 233);
+			this.borderColorSelector.Location = new System.Drawing.Point(24, 358);
+			this.borderColorSelector.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.borderColorSelector.Name = "borderColorSelector";
-			this.borderColorSelector.Size = new System.Drawing.Size(137, 23);
+			this.borderColorSelector.Size = new System.Drawing.Size(206, 35);
 			this.borderColorSelector.SolidColor = System.Drawing.Color.Black;
 			this.borderColorSelector.TabIndex = 1;
 			this.borderColorSelector.Text = "colorComboBox1";
@@ -120,11 +125,13 @@ namespace unvell.ReoGrid.PropertyPages
 			// borderStyleList
 			// 
 			this.borderStyleList.BackColor = System.Drawing.SystemColors.Window;
+			this.borderStyleList.BorderColor = System.Drawing.SystemColors.WindowText;
 			this.borderStyleList.BorderLineStyle = unvell.ReoGrid.BorderLineStyle.None;
-			this.borderStyleList.Location = new System.Drawing.Point(16, 47);
+			this.borderStyleList.Location = new System.Drawing.Point(24, 72);
+			this.borderStyleList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.borderStyleList.Name = "borderStyleList";
 			this.borderStyleList.SelectedBorderStyle = unvell.ReoGrid.BorderLineStyle.Solid;
-			this.borderStyleList.Size = new System.Drawing.Size(137, 152);
+			this.borderStyleList.Size = new System.Drawing.Size(206, 234);
 			this.borderStyleList.TabIndex = 0;
 			this.borderStyleList.Text = "borderStyleList1";
 			// 
@@ -134,31 +141,36 @@ namespace unvell.ReoGrid.PropertyPages
 			this.borderSetter.Cols = 2;
 			this.borderSetter.CurrentBorderStlye = unvell.ReoGrid.BorderLineStyle.None;
 			this.borderSetter.CurrentColor = System.Drawing.Color.Empty;
-			this.borderSetter.Location = new System.Drawing.Point(250, 134);
+			this.borderSetter.Location = new System.Drawing.Point(375, 206);
+			this.borderSetter.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.borderSetter.MixBorders = unvell.ReoGrid.BorderPositions.None;
 			this.borderSetter.Name = "borderSetter";
-			this.borderSetter.Padding = new System.Windows.Forms.Padding(3);
+			this.borderSetter.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.borderSetter.Rows = 2;
-			this.borderSetter.Size = new System.Drawing.Size(180, 108);
+			this.borderSetter.Size = new System.Drawing.Size(270, 166);
 			this.borderSetter.TabIndex = 2;
 			this.borderSetter.Text = "borderSetterControl1";
 			// 
 			// btnBackslash
 			// 
 			this.btnBackslash.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_left_solid;
-			this.btnBackslash.Location = new System.Drawing.Point(441, 249);
+			this.btnBackslash.Location = new System.Drawing.Point(662, 383);
+			this.btnBackslash.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnBackslash.Name = "btnBackslash";
-			this.btnBackslash.Size = new System.Drawing.Size(26, 24);
+			this.btnBackslash.Size = new System.Drawing.Size(39, 37);
 			this.btnBackslash.TabIndex = 14;
 			this.btnBackslash.UseVisualStyleBackColor = true;
 			this.btnBackslash.Click += new System.EventHandler(this.btnBackslash_Click);
+			this.btnBackslash.Visible = false;
+			this.btnBackslash.Enabled = false;
 			// 
 			// btnRight
 			// 
 			this.btnRight.Image = global::unvell.ReoGrid.Editor.Properties.Resources.right_line_solid;
-			this.btnRight.Location = new System.Drawing.Point(404, 249);
+			this.btnRight.Location = new System.Drawing.Point(606, 383);
+			this.btnRight.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnRight.Name = "btnRight";
-			this.btnRight.Size = new System.Drawing.Size(26, 24);
+			this.btnRight.Size = new System.Drawing.Size(39, 37);
 			this.btnRight.TabIndex = 13;
 			this.btnRight.UseVisualStyleBackColor = true;
 			this.btnRight.Click += new System.EventHandler(this.btnRight_Click);
@@ -166,9 +178,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnCenter
 			// 
 			this.btnCenter.Image = global::unvell.ReoGrid.Editor.Properties.Resources.middle_line_solid;
-			this.btnCenter.Location = new System.Drawing.Point(328, 249);
+			this.btnCenter.Location = new System.Drawing.Point(492, 383);
+			this.btnCenter.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnCenter.Name = "btnCenter";
-			this.btnCenter.Size = new System.Drawing.Size(26, 24);
+			this.btnCenter.Size = new System.Drawing.Size(39, 37);
 			this.btnCenter.TabIndex = 12;
 			this.btnCenter.UseVisualStyleBackColor = true;
 			this.btnCenter.Click += new System.EventHandler(this.btnCenter_Click);
@@ -176,9 +189,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnLeft
 			// 
 			this.btnLeft.Image = global::unvell.ReoGrid.Editor.Properties.Resources.left_line_solid;
-			this.btnLeft.Location = new System.Drawing.Point(250, 249);
+			this.btnLeft.Location = new System.Drawing.Point(375, 383);
+			this.btnLeft.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnLeft.Name = "btnLeft";
-			this.btnLeft.Size = new System.Drawing.Size(26, 24);
+			this.btnLeft.Size = new System.Drawing.Size(39, 37);
 			this.btnLeft.TabIndex = 11;
 			this.btnLeft.UseVisualStyleBackColor = true;
 			this.btnLeft.Click += new System.EventHandler(this.btnLeft_Click);
@@ -186,19 +200,23 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnSlash
 			// 
 			this.btnSlash.Image = global::unvell.ReoGrid.Editor.Properties.Resources.slash_right_solid;
-			this.btnSlash.Location = new System.Drawing.Point(212, 249);
+			this.btnSlash.Location = new System.Drawing.Point(318, 383);
+			this.btnSlash.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnSlash.Name = "btnSlash";
-			this.btnSlash.Size = new System.Drawing.Size(26, 24);
+			this.btnSlash.Size = new System.Drawing.Size(39, 37);
 			this.btnSlash.TabIndex = 10;
 			this.btnSlash.UseVisualStyleBackColor = true;
 			this.btnSlash.Click += new System.EventHandler(this.btnSlash_Click);
+			this.btnSlash.Visible = false;
+			this.btnSlash.Enabled = false;
 			// 
 			// btnBottom
 			// 
 			this.btnBottom.Image = global::unvell.ReoGrid.Editor.Properties.Resources.bottom_line_solid;
-			this.btnBottom.Location = new System.Drawing.Point(212, 210);
+			this.btnBottom.Location = new System.Drawing.Point(318, 323);
+			this.btnBottom.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnBottom.Name = "btnBottom";
-			this.btnBottom.Size = new System.Drawing.Size(26, 24);
+			this.btnBottom.Size = new System.Drawing.Size(39, 37);
 			this.btnBottom.TabIndex = 9;
 			this.btnBottom.UseVisualStyleBackColor = true;
 			this.btnBottom.Click += new System.EventHandler(this.btnBottom_Click);
@@ -206,9 +224,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnMiddle
 			// 
 			this.btnMiddle.Image = global::unvell.ReoGrid.Editor.Properties.Resources.center_line_solid;
-			this.btnMiddle.Location = new System.Drawing.Point(212, 172);
+			this.btnMiddle.Location = new System.Drawing.Point(318, 265);
+			this.btnMiddle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnMiddle.Name = "btnMiddle";
-			this.btnMiddle.Size = new System.Drawing.Size(26, 24);
+			this.btnMiddle.Size = new System.Drawing.Size(39, 37);
 			this.btnMiddle.TabIndex = 8;
 			this.btnMiddle.UseVisualStyleBackColor = true;
 			this.btnMiddle.Click += new System.EventHandler(this.btnMiddle_Click);
@@ -216,9 +235,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnTop
 			// 
 			this.btnTop.Image = global::unvell.ReoGrid.Editor.Properties.Resources.top_line_solid;
-			this.btnTop.Location = new System.Drawing.Point(212, 134);
+			this.btnTop.Location = new System.Drawing.Point(318, 206);
+			this.btnTop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnTop.Name = "btnTop";
-			this.btnTop.Size = new System.Drawing.Size(26, 24);
+			this.btnTop.Size = new System.Drawing.Size(39, 37);
 			this.btnTop.TabIndex = 7;
 			this.btnTop.UseVisualStyleBackColor = true;
 			this.btnTop.Click += new System.EventHandler(this.btnTop_Click);
@@ -226,9 +246,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnInside
 			// 
 			this.btnInside.Image = global::unvell.ReoGrid.Editor.Properties.Resources.inside_solid_32;
-			this.btnInside.Location = new System.Drawing.Point(141, 27);
+			this.btnInside.Location = new System.Drawing.Point(212, 42);
+			this.btnInside.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnInside.Name = "btnInside";
-			this.btnInside.Size = new System.Drawing.Size(42, 40);
+			this.btnInside.Size = new System.Drawing.Size(63, 62);
 			this.btnInside.TabIndex = 6;
 			this.btnInside.UseVisualStyleBackColor = true;
 			this.btnInside.Click += new System.EventHandler(this.btnInside_Click);
@@ -236,9 +257,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnOutline
 			// 
 			this.btnOutline.Image = global::unvell.ReoGrid.Editor.Properties.Resources.outline_solid_32;
-			this.btnOutline.Location = new System.Drawing.Point(80, 27);
+			this.btnOutline.Location = new System.Drawing.Point(120, 42);
+			this.btnOutline.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnOutline.Name = "btnOutline";
-			this.btnOutline.Size = new System.Drawing.Size(45, 40);
+			this.btnOutline.Size = new System.Drawing.Size(68, 62);
 			this.btnOutline.TabIndex = 5;
 			this.btnOutline.UseVisualStyleBackColor = true;
 			this.btnOutline.Click += new System.EventHandler(this.btnOutline_Click);
@@ -246,9 +268,10 @@ namespace unvell.ReoGrid.PropertyPages
 			// btnNone
 			// 
 			this.btnNone.Image = global::unvell.ReoGrid.Editor.Properties.Resources.none_border_32;
-			this.btnNone.Location = new System.Drawing.Point(18, 27);
+			this.btnNone.Location = new System.Drawing.Point(27, 42);
+			this.btnNone.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.btnNone.Name = "btnNone";
-			this.btnNone.Size = new System.Drawing.Size(45, 40);
+			this.btnNone.Size = new System.Drawing.Size(68, 62);
 			this.btnNone.TabIndex = 4;
 			this.btnNone.UseVisualStyleBackColor = true;
 			this.btnNone.Click += new System.EventHandler(this.btnNone_Click);
@@ -259,25 +282,29 @@ namespace unvell.ReoGrid.PropertyPages
 			this.groupBox1.Controls.Add(this.btnOutline);
 			this.groupBox1.Controls.Add(this.btnInside);
 			this.groupBox1.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.groupBox1.Location = new System.Drawing.Point(203, 13);
+			this.groupBox1.Location = new System.Drawing.Point(304, 20);
+			this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(282, 87);
+			this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+			this.groupBox1.Size = new System.Drawing.Size(423, 134);
 			this.groupBox1.TabIndex = 15;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Preset Styles";
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Location = new System.Drawing.Point(203, 115);
+			this.groupBox2.Location = new System.Drawing.Point(304, 177);
+			this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(282, 172);
+			this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+			this.groupBox2.Size = new System.Drawing.Size(423, 265);
 			this.groupBox2.TabIndex = 16;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Borders";
 			// 
 			// BorderPropertyPage
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.btnBackslash);
 			this.Controls.Add(this.btnRight);
@@ -291,8 +318,9 @@ namespace unvell.ReoGrid.PropertyPages
 			this.Controls.Add(this.grpLine);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.groupBox2);
+			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "BorderPropertyPage";
-			this.Size = new System.Drawing.Size(569, 366);
+			this.Size = new System.Drawing.Size(854, 563);
 			this.grpLine.ResumeLayout(false);
 			this.grpLine.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
