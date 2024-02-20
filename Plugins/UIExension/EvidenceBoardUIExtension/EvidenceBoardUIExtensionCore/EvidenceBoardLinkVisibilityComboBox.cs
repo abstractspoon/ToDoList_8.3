@@ -74,8 +74,6 @@ namespace EvidenceBoardUIExtension
 				if (link.Type != EvidenceBoardLinkType.User)
 					link.Label = trans.Translate(link.Label);
 			}
-
-			int breakpoint = 0;
 		}
 
 		public IEnumerable<string> UserLinkTypes
