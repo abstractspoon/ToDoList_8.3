@@ -35,7 +35,7 @@ exit
 ECHO ON
 
 REM Run units tests
-cd TDLTest\Unicode_Debug
+cd TDLTest\Unicode_Release
 
 TDLTest > %OUTPUT_FILE%
 
