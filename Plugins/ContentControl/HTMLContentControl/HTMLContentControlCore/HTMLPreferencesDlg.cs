@@ -69,7 +69,7 @@ namespace HTMLContentControl
 				CheckFileExists = true,
 				CheckPathExists = true,
 
-				Filter = MSDN.Html.Editor.EnterImageForm.ImageFilter,
+				Filter = m_Trans.Translate(MSDN.Html.Editor.EnterImageForm.ImageFilter),
 				FilterIndex = 0,
 				RestoreDirectory = true,
 
