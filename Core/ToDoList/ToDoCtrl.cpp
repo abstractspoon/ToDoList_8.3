@@ -3188,8 +3188,7 @@ BOOL CToDoCtrl::SetSelectedTaskDate(TDC_DATE nDate, const COleDateTime& date, BO
 	return TRUE;
 }
 
-BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, 
-									   BOOL bAndSubtasks, BOOL bFromToday, BOOL bPreserveWeekday)
+BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, BOOL bAndSubtasks, BOOL bFromToday)
 {
 	TDC_ATTRIBUTE nAttribID = TDC::MapDateToAttribute(nDate);
 
@@ -3212,6 +3211,10 @@ BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nU
 	// the same task multiple times via references
 	CDWordSet mapProcessed;
 
+	DWORD dwFlags = 0;
+	Misc::SetFlag(dwFlags, TDCOTD_OFFSETFROMTODAY, bFromToday);
+	Misc::SetFlag(dwFlags, TDCOTD_OFFSETSUBTASKS, bAndSubtasks);
+	
 	while (pos)
 	{
 		DWORD dwTaskID = GetTrueTaskID(htiSel.GetNext(pos));
@@ -3219,15 +3222,7 @@ BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nU
 		if (mapProcessed.Has(dwTaskID))
 			continue;
 
-		TDC_SET nRes = m_data.OffsetTaskDate(dwTaskID, 
-											 nDate, 
-											 nAmount, 
-											 nUnits, 
-											 bAndSubtasks, 
-											 bFromToday,
-											 bPreserveWeekday);
-
-		if (!HandleModResult(dwTaskID, nRes, aModTaskIDs))
+		if (!HandleModResult(dwTaskID, m_data.OffsetTaskDate(dwTaskID, nDate, nAmount, nUnits, dwFlags), aModTaskIDs))
 			return FALSE;
 
 		mapProcessed.Add(dwTaskID);
@@ -3273,10 +3268,9 @@ BOOL CToDoCtrl::CanOffsetSelectedTaskStartAndDueDates() const
 	return TRUE;
 }
 
-BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits, 
-												   BOOL bAndSubtasks, BOOL bFromToday, BOOL bPreserveWeekday)
+BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits, BOOL bAndSubtasks, BOOL bFromToday)
 {
-	if (!CanOffsetSelectedTaskStartAndDueDates())
+	if (!CanEditSelectedTask(TDCA_STARTDATE))
 		return FALSE;
 	
 	Flush();
@@ -3298,15 +3292,8 @@ BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits
 	while (pos)
 	{
 		DWORD dwTaskID = GetTrueTaskID(htiSel.GetNext(pos));
-		TDC_SET nRes = OffsetTaskStartAndDueDates(dwTaskID, 
-												  nAmount, 
-												  nUnits, 
-												  bAndSubtasks, 
-												  bFromToday, 
-												  bPreserveWeekday,
-												  mapProcessed);
 
-		if (!HandleModResult(dwTaskID, nRes, aModTaskIDs))
+		if (!HandleModResult(dwTaskID, OffsetTaskStartAndDueDates(dwTaskID, nAmount, nUnits, bAndSubtasks, bFromToday, mapProcessed), aModTaskIDs))
 			return FALSE;
 	}
 	
@@ -3323,8 +3310,7 @@ BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits
 	return TRUE;
 }
 
-TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_UNITS nUnits, 
-											  BOOL bAndSubtasks, BOOL bFromToday, BOOL bPreserveWeekdays, CDWordSet& mapProcessed)
+TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_UNITS nUnits, BOOL bAndSubtasks, BOOL bFromToday, CDWordSet& mapProcessed)
 {
 	ASSERT(CanEditSelectedTask(TDCA_STARTDATE));
 	ASSERT(!HasStyle(TDCS_AUTOADJUSTDEPENDENCYDATES) || !m_data.TaskHasDependencies(dwTaskID));
@@ -3345,39 +3331,23 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 
 	TDC_SET nRes = SET_NOCHANGE;
 
-	if ((pTDI->HasStart() && pTDI->HasDue()) || bFromToday)
+	// Handle subtasks at the end
+	DWORD dwFlags = (bFromToday ? TDCOTD_OFFSETFROMTODAY : 0);
+
+	if (pTDI->HasStart() && pTDI->HasDue())
 	{
 		// Offset as a block
-		nRes = m_data.OffsetTaskStartAndDueDates(dwTaskID, 
-												 nAmount, 
-												 nUnits, 
-												 FALSE, // Handle subtasks at the end
-												 bFromToday,
-												 bPreserveWeekdays);
-	}
-	else if (pTDI->HasStart())
-	{
-		nRes = m_data.OffsetTaskDate(dwTaskID, 
-									 TDCD_START, 
-									 nAmount, 
-									 nUnits, 
-									 FALSE, // Handle subtasks at the end
-									 bFromToday,
-									 bPreserveWeekdays);
-	}
-	else if (pTDI->HasDue())
-	{
-		nRes = m_data.OffsetTaskDate(dwTaskID, 
-									 TDCD_DUE, 
-									 nAmount, 
-									 nUnits, 
-									 FALSE, // Handle subtasks at the end
-									 bFromToday,
-									 bPreserveWeekdays);
+		COleDateTime dtStart = (bFromToday ? CDateHelper::GetDate(DHD_TODAY) : pTDI->dateStart);
+		CDateHelper().OffsetDate(dtStart, nAmount, TDC::MapUnitsToDHUnits(nUnits));
+
+		if (dtStart != pTDI->dateStart)
+			nRes = m_data.MoveTaskStartAndDueDates(dwTaskID, dtStart);
 	}
 	else
 	{
-		ASSERT(0);
+		// Offsetting from today will initialise dates if not currently set
+		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_START, nAmount, nUnits, dwFlags);
+		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_DUE, nAmount, nUnits, dwFlags);
 	}
 	ASSERT((nRes != SET_FAILED) || !bFromToday);
 
@@ -3394,15 +3364,8 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 			for (int nSubTask = 0; nSubTask < pTDS->GetSubTaskCount(); nSubTask++)
 			{
 				DWORD dwChildID = pTDS->GetSubTaskID(nSubTask);
-				TDC_SET nChildRes = OffsetTaskStartAndDueDates(dwChildID, 
-															   nAmount, 
-															   nUnits, 
-															   TRUE, // Include subtasks
-															   bFromToday, 
-															   bPreserveWeekdays,
-															   mapProcessed); // RECURSIVE CALL
 
-				if (nChildRes == SET_CHANGE)
+				if (SET_CHANGE == OffsetTaskStartAndDueDates(dwChildID, nAmount, nUnits, TRUE, bFromToday, mapProcessed)) // RECURSIVE CALL
 					nRes = SET_CHANGE;
 			}
 		}
@@ -5625,14 +5588,6 @@ DWORD CToDoCtrl::SetStyle(TDC_STYLE nStyle, BOOL bEnable)
 		// handled solely by tree-list
 		break;
 
-	case TDCS_SHOWFILELINKTHUMBNAILS:
-		{
-			m_cbFileLink.EnableEditStyle(FES_DISPLAYIMAGETHUMBNAILS, bEnable);
-			
-			CTDCCustomAttributeUIHelper::EnableFilelinkThumbnails(m_aCustomControls, this, bEnable);
-		}
-		break;
-
 	case TDCS_SHOWINFOTIPS:
 		if (bEnable)
 		{
@@ -5732,7 +5687,6 @@ DWORD CToDoCtrl::SetStyle(TDC_STYLE nStyle, BOOL bEnable)
 	case TDCS_AUTOADJUSTDEPENDENCYDATES:
 	case TDCS_TRACKSELECTEDTASKONLY:
 	case TDCS_COMMENTSUSETREEFONT:
-	case TDCS_PRESERVEWEEKDAYS:
 		// do nothing
 		break;
 
