@@ -3211,10 +3211,6 @@ BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nU
 	// the same task multiple times via references
 	CDWordSet mapProcessed;
 
-	DWORD dwFlags = 0;
-	Misc::SetFlag(dwFlags, TDCOTD_OFFSETFROMTODAY, bFromToday);
-	Misc::SetFlag(dwFlags, TDCOTD_OFFSETSUBTASKS, bAndSubtasks);
-	
 	while (pos)
 	{
 		DWORD dwTaskID = GetTrueTaskID(htiSel.GetNext(pos));
@@ -3222,7 +3218,14 @@ BOOL CToDoCtrl::OffsetSelectedTaskDate(TDC_DATE nDate, int nAmount, TDC_UNITS nU
 		if (mapProcessed.Has(dwTaskID))
 			continue;
 
-		if (!HandleModResult(dwTaskID, m_data.OffsetTaskDate(dwTaskID, nDate, nAmount, nUnits, dwFlags), aModTaskIDs))
+		TDC_SET nRes = m_data.OffsetTaskDate(dwTaskID, 
+											 nDate, 
+											 nAmount, 
+											 nUnits,
+											 bAndSubtasks,
+											 bFromToday);
+
+		if (!HandleModResult(dwTaskID, nRes, aModTaskIDs))
 			return FALSE;
 
 		mapProcessed.Add(dwTaskID);
@@ -3268,9 +3271,10 @@ BOOL CToDoCtrl::CanOffsetSelectedTaskStartAndDueDates() const
 	return TRUE;
 }
 
-BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits, BOOL bAndSubtasks, BOOL bFromToday)
+BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits, 
+													BOOL bAndSubtasks, BOOL bFromToday)
 {
-	if (!CanEditSelectedTask(TDCA_STARTDATE))
+	if (!CanOffsetSelectedTaskStartAndDueDates())
 		return FALSE;
 	
 	Flush();
@@ -3292,8 +3296,14 @@ BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits
 	while (pos)
 	{
 		DWORD dwTaskID = GetTrueTaskID(htiSel.GetNext(pos));
+		TDC_SET nRes = OffsetTaskStartAndDueDates(dwTaskID, 
+												  nAmount, 
+												  nUnits, 
+												  bAndSubtasks, 
+												  bFromToday,
+												  mapProcessed);
 
-		if (!HandleModResult(dwTaskID, OffsetTaskStartAndDueDates(dwTaskID, nAmount, nUnits, bAndSubtasks, bFromToday, mapProcessed), aModTaskIDs))
+		if (!HandleModResult(dwTaskID, nRes, aModTaskIDs))
 			return FALSE;
 	}
 	
@@ -3310,7 +3320,8 @@ BOOL CToDoCtrl::OffsetSelectedTaskStartAndDueDates(int nAmount, TDC_UNITS nUnits
 	return TRUE;
 }
 
-TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_UNITS nUnits, BOOL bAndSubtasks, BOOL bFromToday, CDWordSet& mapProcessed)
+TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_UNITS nUnits, 
+												BOOL bAndSubtasks, BOOL bFromToday, CDWordSet& mapProcessed)
 {
 	ASSERT(CanEditSelectedTask(TDCA_STARTDATE));
 	ASSERT(!HasStyle(TDCS_AUTOADJUSTDEPENDENCYDATES) || !m_data.TaskHasDependencies(dwTaskID));
@@ -3332,8 +3343,6 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 	TDC_SET nRes = SET_NOCHANGE;
 
 	// Handle subtasks at the end
-	DWORD dwFlags = (bFromToday ? TDCOTD_OFFSETFROMTODAY : 0);
-
 	if (pTDI->HasStart() && pTDI->HasDue())
 	{
 		// Offset as a block
@@ -3346,8 +3355,8 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 	else
 	{
 		// Offsetting from today will initialise dates if not currently set
-		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_START, nAmount, nUnits, dwFlags);
-		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_DUE, nAmount, nUnits, dwFlags);
+		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_START, nAmount, nUnits, FALSE, bFromToday);
+		nRes = m_data.OffsetTaskDate(dwTaskID, TDCD_DUE, nAmount, nUnits, FALSE, bFromToday);
 	}
 	ASSERT((nRes != SET_FAILED) || !bFromToday);
 
@@ -3364,8 +3373,15 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 			for (int nSubTask = 0; nSubTask < pTDS->GetSubTaskCount(); nSubTask++)
 			{
 				DWORD dwChildID = pTDS->GetSubTaskID(nSubTask);
+				
+				TDC_SET nChildRes = OffsetTaskStartAndDueDates(dwChildID, 
+															   nAmount, 
+															   nUnits, 
+															   TRUE, // Include subtasks
+															   bFromToday, 
+															   mapProcessed); // RECURSIVE CALL
 
-				if (SET_CHANGE == OffsetTaskStartAndDueDates(dwChildID, nAmount, nUnits, TRUE, bFromToday, mapProcessed)) // RECURSIVE CALL
+				if (nChildRes == SET_CHANGE)
 					nRes = SET_CHANGE;
 			}
 		}
@@ -5586,6 +5602,14 @@ DWORD CToDoCtrl::SetStyle(TDC_STYLE nStyle, BOOL bEnable)
 	case TDCS_DONEHAVELOWESTPRIORITY:
 	case TDCS_DONEHAVELOWESTRISK:
 		// handled solely by tree-list
+		break;
+
+	case TDCS_SHOWFILELINKTHUMBNAILS:
+		{
+			m_cbFileLink.EnableEditStyle(FES_DISPLAYIMAGETHUMBNAILS, bEnable);
+			
+			CTDCCustomAttributeUIHelper::EnableFilelinkThumbnails(m_aCustomControls, this, bEnable);
+		}
 		break;
 
 	case TDCS_SHOWINFOTIPS:
