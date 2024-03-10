@@ -1195,7 +1195,7 @@ BOOL TODOITEM::GetNextOccurence(COleDateTime& dtNext, BOOL& bDue)
 	return TRUE;
 }
 
-BOOL TODOITEM::CalcNextOccurences(const COleDateTimeRange& dtRange, CArray<double, double&>& aDates, BOOL& bDue) const
+int TODOITEM::CalcNextOccurences(const COleDateTimeRange& dtRange, CArray<COleDateTimeRange, COleDateTimeRange&>& aOccur) const
 {
 	ASSERT(!IsDone());
 
@@ -1203,39 +1203,52 @@ BOOL TODOITEM::CalcNextOccurences(const COleDateTimeRange& dtRange, CArray<doubl
 		return FALSE;
 
 	if (!HasStart() || !HasDue() || (dateDue < dateStart))
-		return FALSE;
+		return 0;
 
-	switch (trRecurrence.nRecalcFrom)
+	// Expand range by task duration to ensure full coverage
+	COleDateTimeRange dtExtended(dtRange);
+	dtExtended.Expand((int)(dateDue.m_dt - dateStart.m_dt), DHU_DAYS);
+
+	BOOL bDueDate = (trRecurrence.nRecalcFrom != TDIRO_STARTDATE);
+	COleDateTime dtCur = (bDueDate ? dateDue : dateStart);
+
+	CArray<double, double&> aDates;
+	int nNumOccur = trRecurrence.CalcNextOccurences(dtCur, dtExtended, aDates);
+
+	if (!nNumOccur)
+		return 0;
+
+	CDateHelper dh;
+	aOccur.SetSize(nNumOccur);
+	
+	for (int nOccur = 0; nOccur < nNumOccur; nOccur++)
 	{
-	case TDIRO_DUEDATE:
-	case TDIRO_DONEDATE:
+		const double dDate = aDates[nOccur];
+		int nOffset = (int)Misc::Round(dDate - dtCur.m_dt, 4);
+
+		if (bDueDate)
 		{
-			// Extend the range by the duration of the task else 
-			// the start dates will stop short of the original range
-			COleDateTimeRange dtExtended = dtRange;
-			dtExtended.m_dtEnd += (dateDue - dateStart);
+			COleDateTime dtNewStart = dateStart;
+			VERIFY(CDateHelper().OffsetDate(dtNewStart, nOffset, DHU_DAYS));
 
-			if (trRecurrence.CalcNextOccurences(dateDue, dtExtended, aDates))
-			{
-				bDue = TRUE;
-				return TRUE;
-			}
+			ASSERT((dtNewStart.m_dt <= dDate) ||
+					(CDateHelper::IsSameDay(dDate, dtNewStart) && !CDateHelper::DateHasTime(dDate)));
+
+			VERIFY(aOccur[nOccur].Set(dtNewStart, dDate));
 		}
-		break;
-
-	case TDIRO_STARTDATE:
-		if (trRecurrence.CalcNextOccurences(dateStart, dtRange, aDates))
+		else // start date
 		{
-			bDue = FALSE;
-			return TRUE;
-		}
-		break;
+			COleDateTime dtNewDue = dateDue;
+			VERIFY(CDateHelper().OffsetDate(dtNewDue, nOffset, DHU_DAYS));
 
-	default:
-		ASSERT(0);
+			ASSERT((dDate <= dtNewDue.m_dt) ||
+					(CDateHelper::IsSameDay(dDate, dtNewDue) && !CDateHelper::DateHasTime(dtNewDue)));
+
+			VERIFY(aOccur[nOccur].Set(dDate, dtNewDue));
+		}
 	}
 
-	return FALSE;
+	return nNumOccur;
 }
 
 BOOL TODOITEM::IsRecentlyModified() const
