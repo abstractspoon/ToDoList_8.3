@@ -51,6 +51,7 @@ struct TDCRECURRENCE : public CRecurrence
 
 	BOOL Matches(const TDCRECURRENCE& tr, BOOL bIncludeRemainingOccurrences) const;
 
+	// These hide the base class methods
 	BOOL SetRegularity(TDC_REGULARITY nRegularity, DWORD dwSpecific1, DWORD dwSpecific2);
 	TDC_REGULARITY GetRegularity(DWORD& dwSpecific1, DWORD& dwSpecific2) const;
 	TDC_REGULARITY GetRegularity() const;

@@ -3350,7 +3350,7 @@ TDC_SET CToDoCtrl::OffsetTaskStartAndDueDates(DWORD dwTaskID, int nAmount, TDC_U
 		CDateHelper().OffsetDate(dtStart, nAmount, TDC::MapUnitsToDHUnits(nUnits));
 
 		if (dtStart != pTDI->dateStart)
-			nRes = m_data.MoveTaskStartAndDueDates(dwTaskID, dtStart);
+			nRes = m_data.OffsetTaskStartAndDueDates(dwTaskID, dtStart);
 	}
 	else
 	{
