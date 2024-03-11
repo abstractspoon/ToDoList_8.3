@@ -2395,6 +2395,8 @@ BOOL CToDoCtrlData::CanOffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, 
 									  BOOL bAndSubtasks, BOOL bFromToday)
 {
+	ASSERT(nAmount != 0);
+
 	DWORD dwFlags = 0;
 	Misc::SetFlag(dwFlags, OFFSET_FROMTODAY, bFromToday);
 	Misc::SetFlag(dwFlags, OFFSET_SUBTASKS, bAndSubtasks);
@@ -2405,7 +2407,8 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 // Internal
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, DWORD dwFlags)
 {
-	ASSERT(nAmount != 0);
+	if (nAmount == 0)
+		return SET_NOCHANGE;
 
 	BOOL bFitToRecurringScheme = Misc::HasFlag(dwFlags, OFFSET_FITTORECURRINGSCHEME);
 	BOOL bAndSubtasks = Misc::HasFlag(dwFlags, OFFSET_SUBTASKS);
