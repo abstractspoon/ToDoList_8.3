@@ -373,6 +373,10 @@ int CRecurrence::CalcNextOccurrences(const COleDateTime& dtPrev, const COleDateT
 		return 0;
 	}
 
+#ifdef _DEBUG
+	CString sPrev = dtPrev.Format();
+#endif
+
 	// Take a copy of ourselves because we need to able
 	// to modify the remaining recurrence count
 	CRecurrence tr(*this);
@@ -386,6 +390,10 @@ int CRecurrence::CalcNextOccurrences(const COleDateTime& dtPrev, const COleDateT
 
 	while (dtNext < dtRange.GetStart())
 	{
+#ifdef _DEBUG
+		CString sNext = dtNext.Format();
+#endif
+
 		if (!tr.GetNextOccurence(dtNext, dtNext))
 			return 0;
 	}
@@ -393,6 +401,10 @@ int CRecurrence::CalcNextOccurrences(const COleDateTime& dtPrev, const COleDateT
 	// Process range itself
 	while (dtNext < dtRange.GetEnd())
 	{
+#ifdef _DEBUG
+		CString sNext = dtNext.Format();
+#endif
+
 		aDates.Add(dtNext.m_dt);
 
 		if (!tr.GetNextOccurence(dtNext, dtNext))
