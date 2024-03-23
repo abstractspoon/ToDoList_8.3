@@ -2404,7 +2404,8 @@ BOOL CToDoCtrlData::CanOffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, 
 									  BOOL bAndSubtasks, BOOL bFromToday)
 {
-	ASSERT(nAmount != 0);
+
+	ASSERT(nAmount || bFromToday);
 
 	DWORD dwFlags = 0;
 	Misc::SetFlag(dwFlags, OFFSET_FROMTODAY, bFromToday);
@@ -2417,9 +2418,6 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, DWORD dwFlags)
 {
 	ASSERT((nUnits != TDCU_HOURS) && (nUnits != TDCU_MINS));
-
-	if (nAmount == 0)
-		return SET_NOCHANGE;
 
 	BOOL bFitToRecurringScheme = Misc::HasFlag(dwFlags, OFFSET_FITTORECURRINGSCHEME);
 	BOOL bAndSubtasks = Misc::HasFlag(dwFlags, OFFSET_SUBTASKS);
@@ -2440,18 +2438,20 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 		{
 		case TDCU_HOURS:
 			{
-				// Modify time only
+				ASSERT(nAmount);
 				ASSERT(date.m_dt < 1.0);
 
+				// Modify time only
 				date.m_dt += (nAmount / 24.0);
 			}
 			break;
 
 		case TDCU_MINS:
 			{
-				// Modify time only
+				ASSERT(nAmount);
 				ASSERT(date.m_dt < 1.0);
 
+				// Modify time only
 				date.m_dt += (nAmount / (24.0 * 60));
 			}
 			break;
@@ -2459,7 +2459,8 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 		default: // All the rest
 			{
 				// Modify date AND time
-				VERIFY(dh.OffsetDate(date, nAmount, TDC::MapUnitsToDHUnits(nUnits), TRUE)); // Preserve end of month
+				if (nAmount)
+					VERIFY(dh.OffsetDate(date, nAmount, TDC::MapUnitsToDHUnits(nUnits), TRUE)); // Preserve end of month
 
 				// Special case: Task is recurring and the date was changed -> must fall on a valid date
 				if (bFitToRecurringScheme)
