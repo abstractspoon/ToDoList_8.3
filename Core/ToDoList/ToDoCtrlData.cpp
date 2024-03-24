@@ -2045,7 +2045,6 @@ TDC_SET CToDoCtrlData::SetTaskCustomAttributeData(DWORD dwTaskID, const CString&
 	const TDCCUSTOMATTRIBUTEDEFINITION* pDef = NULL;
 	GET_DEF_RET(m_aCustomAttribDefs, sAttribID, pDef, SET_FAILED);
 
-
 	TODOITEM* pTDI = NULL;
 	EDIT_GET_TDI(dwTaskID, pTDI);
 
@@ -2404,7 +2403,6 @@ BOOL CToDoCtrlData::CanOffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, 
 									  BOOL bAndSubtasks, BOOL bFromToday)
 {
-
 	ASSERT(nAmount || bFromToday);
 
 	DWORD dwFlags = 0;
