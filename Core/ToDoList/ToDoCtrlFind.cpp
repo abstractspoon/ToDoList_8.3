@@ -155,7 +155,6 @@ BOOL CTDCLongestItemMap::IsSupportedColumn(TDC_COLUMN nColID)
 	case TDCC_TIMEESTIMATE:
 	case TDCC_TIMESPENT:
 	case TDCC_TIMEREMAINING:
-	case TDCC_ID:
 	case TDCC_FILELINK:
 	case TDCC_COMMENTSSIZE:
 	case TDCC_COMMENTSFORMAT:
@@ -245,20 +244,11 @@ CString CToDoCtrlFind::GetLongestValue(TDC_COLUMN nColID, BOOL bVisibleOnly) con
 	// attributes requiring subtask values
 	switch (nColID)
 	{
-	case TDCC_POSITION:
-		return GetLongestPosition(NULL, NULL, bVisibleOnly);
-
-	case TDCC_RECURRENCE:
-		return GetLongestValue(nColID, NULL, NULL, GetLongestRecurrenceOption(), bVisibleOnly);
-
-	case TDCC_COMMENTSFORMAT:
-		return GetLongestValue(nColID, NULL, NULL, m_mgrContent.GetLongestContentDescription(), bVisibleOnly);
-
-	case TDCC_COST:
-		return GetLongestCost(NULL, NULL, NULL, bVisibleOnly);
-
-	case TDCC_SUBTASKDONE:
-		return GetLongestSubtaskDone(NULL, NULL, NULL, bVisibleOnly);
+	case TDCC_POSITION:			return GetLongestPosition(NULL, NULL, bVisibleOnly);
+	case TDCC_RECURRENCE:		return GetLongestValue(nColID, NULL, NULL, GetLongestRecurrenceOption(), bVisibleOnly);
+	case TDCC_COMMENTSFORMAT:	return GetLongestValue(nColID, NULL, NULL, m_mgrContent.GetLongestContentDescription(), bVisibleOnly);
+	case TDCC_COST:				return GetLongestCost(NULL, NULL, NULL, bVisibleOnly);
+	case TDCC_SUBTASKDONE:		return GetLongestSubtaskDone(NULL, NULL, NULL, bVisibleOnly);
 
 	case TDCC_ALLOCTO:
 	case TDCC_CATEGORY:
@@ -340,7 +330,6 @@ CString CToDoCtrlFind::GetLongestValue(TDC_COLUMN nColID, HTREEITEM hti, const T
 		case TDCC_EXTERNALID:		sLongest = pTDI->sExternalID;						break;	
 		case TDCC_CREATEDBY:		sLongest = pTDI->sCreatedBy;						break;
 		case TDCC_LASTMODBY:		sLongest = pTDI->sLastModifiedBy;					break;
-
 
 		case TDCC_COST:
 		case TDCC_SUBTASKDONE:
@@ -1235,9 +1224,6 @@ void CToDoCtrlFind::GetLongestValues(HTREEITEM hti,
 
 		if (mapLongest.HasColumn(TDCC_COMMENTSFORMAT))
 			mapLongest.UpdateValue(TDCC_COMMENTSFORMAT, m_formatter.GetTaskCommentFormat(pTDI));
-
-		if (mapLongest.HasColumn(TDCC_ID))
-			mapLongest.UpdateValue(TDCC_ID, m_formatter.GetID(pTDS->GetTaskID(), pTDI->dwTaskRefID));
 
 		if (mapLongest.HasColumn(TDCC_SUBTASKDONE))
 			mapLongest.UpdateValue(TDCC_SUBTASKDONE, m_formatter.GetTaskSubtaskCompletion(pTDI, pTDS));
