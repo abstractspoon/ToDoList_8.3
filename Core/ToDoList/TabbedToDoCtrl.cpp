@@ -2539,7 +2539,7 @@ void CTabbedToDoCtrl::SelectAll()
 			// select items in tree
 			if (bAllTasks)
 			{
-				CToDoCtrl::SelectAll(FALSE); // including hidden items
+				CToDoCtrl::SelectAll(FALSE); // including collapsed items
 				m_taskList.SelectAll();
 			}
 			else
@@ -6669,7 +6669,7 @@ void CTabbedToDoCtrl::OnListSelChanged()
 	if (!cacheTree.SelectionMatches(cacheList, TRUE) && pLVData->bHasSelectedTask)
 	{
 		if (cacheList.aSelTaskIDs.GetSize() == m_taskTree.GetItemCount())
-			m_taskTree.SelectAll(FALSE);
+			m_taskTree.SelectAll(FALSE); // Include collapsed items
 		else
 			m_taskTree.RestoreSelection(cacheList);
 	}
