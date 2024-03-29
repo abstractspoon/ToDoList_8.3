@@ -6426,7 +6426,7 @@ BOOL CToDoCtrl::LoadTasks(const CTaskFile& tasks)
 	if (!GetSafeHwnd())
 		return FALSE;
 
-	m_taskTree.EnableRecalcColumns(FALSE);
+	CHoldRecalcColumns hr(m_taskTree);
 
 	// PERMANENT LOGGING //////////////////////////////////////////////
 	CScopedLogTimer log;
@@ -6559,8 +6559,6 @@ BOOL CToDoCtrl::LoadTasks(const CTaskFile& tasks)
 	if (bHidden)
 		ShowWindow(SW_HIDE);
 	
-	m_taskTree.EnableRecalcColumns(TRUE);
-
 	// PERMANENT LOGGING //////////////////////////////////////////////
 	log.LogTimeElapsed(_T("CToDoCtrl::LoadTasks(Remaining)"));
 	///////////////////////////////////////////////////////////////////
@@ -8390,6 +8388,8 @@ BOOL CToDoCtrl::PasteTasksToTree(const CTaskFile& tasks, HTREEITEM htiDestParent
 
 	TCH().SelectItem(NULL);
 	TSH().RemoveAll();
+
+	CHoldRecalcColumns hr(m_taskTree);
 
 	while (hTask)
 	{
@@ -11495,6 +11495,8 @@ void CToDoCtrl::ExpandTasks(TDC_EXPANDCOLLAPSE nWhat, BOOL bExpand)
 	// PERMANENT LOGGING ///////////////////////////////////////////////
 	CScopedLogTimer timer(_T("ExpandTasks(%s)"), Misc::Format(bExpand));
 	////////////////////////////////////////////////////////////////////
+
+	CHoldRecalcColumns hr(m_taskTree);
 
 	switch (nWhat)
 	{
