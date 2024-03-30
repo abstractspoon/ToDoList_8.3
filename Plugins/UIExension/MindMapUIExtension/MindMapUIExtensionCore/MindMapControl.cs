@@ -1815,15 +1815,14 @@ namespace MindMapUIExtension
 				return;
 
 			m_RecalcingPositions = true;
-#if DEBUG
-			Stopwatch watch = Stopwatch.StartNew();
-#endif
 			TreeNode rootNode = RootNode;
             MindMapItem rootItem = RootItem;
 
 			ResetPositions(rootNode);
-
-            using (Graphics graphics = m_TreeView.CreateGraphics())
+#if DEBUG
+			Stopwatch watch = Stopwatch.StartNew();
+#endif
+			using (Graphics graphics = m_TreeView.CreateGraphics())
             {
 				var rootLoc = m_Alignment;
 
@@ -1903,7 +1902,7 @@ namespace MindMapUIExtension
             RecalculateDrawOffset();
 			Invalidate();
 #if DEBUG
-			Debug.WriteLine("RecalculatePositions took " + watch.ElapsedMilliseconds + " ms");
+			Debug.WriteLine("RecalculatePositions took {0} ms", watch.ElapsedMilliseconds);
 #endif
 			m_RecalcingPositions = false;
 		}
@@ -2051,7 +2050,10 @@ namespace MindMapUIExtension
 
         private Rectangle GetLogicalTreeNodePosition(Graphics graphics, TreeNode node)
         {
-            Rectangle itemBounds = node.Bounds;
+#if DEBUG
+			int tickStart = Environment.TickCount;
+#endif
+			Rectangle itemBounds = node.Bounds;
 
             // Always calculate the width of the text because the tree 
             // doesn't seem to return the same widths as the Graphics object
@@ -2067,6 +2069,9 @@ namespace MindMapUIExtension
             int vertOffset = (m_TreeView.VertScrollPos * node.Bounds.Height);
 
             itemBounds.Offset(horzOffset, vertOffset);
+#if DEBUG
+			m_PerfData.GetLogicalTreeNodePosition += (Environment.TickCount - tickStart);
+#endif
 
             return itemBounds;
         }
