@@ -408,6 +408,14 @@ namespace MDContentControl
 			case Keys.Delete:
 				return false; // default handling
 
+			case Keys.Tab:
+				InputTextCtrl.Indent();
+				return true;
+
+			case (Keys.Shift | Keys.Tab):
+				InputTextCtrl.Outdent();
+				return true;
+
 			case (Keys.Control | Keys.Left):
 			case (Keys.Control | Keys.Right):
 			case (Keys.Shift | Keys.Left):
