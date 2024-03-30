@@ -410,19 +410,18 @@ namespace MDContentControl
 
 			case Keys.Tab:
 				InputTextCtrl.Indent();
-				return true;
+				return true; // handled
 
 			case (Keys.Shift | Keys.Tab):
 				InputTextCtrl.Outdent();
-				return true;
+				return true; // handled
 
 			case (Keys.Control | Keys.Left):
 			case (Keys.Control | Keys.Right):
 			case (Keys.Shift | Keys.Left):
 			case (Keys.Shift | Keys.Right):
-				// Forward to input control
 				Win32.SendMessage(InputTextCtrl.Handle, WM_KEYDOWN, (UIntPtr)keypress, IntPtr.Zero);
-				return true; // eat
+				return true; // handled
 			}
 
 			// All else
