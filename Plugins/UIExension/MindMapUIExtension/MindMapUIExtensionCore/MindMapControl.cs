@@ -488,6 +488,10 @@ namespace MindMapUIExtension
                     DrawInsertionMarker(e.Graphics, m_DropTarget);
 
 				PostDraw(e.Graphics, m_TreeView.Nodes);
+#if DEBUG
+				if (!SavingToImage)
+					m_PerfData.Draw(e.Graphics, (DebugMode() ? m_TreeView.Width : 0), 0);
+#endif
 			}
 		}
 
