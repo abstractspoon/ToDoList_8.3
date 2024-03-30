@@ -263,22 +263,16 @@ namespace MindMapUIExtension
 					return IsAnyNodeCollapsed(RootNode.Nodes);
 
 				case ExpandNode.ExpandSelection:
-                    if (SelectedNode != null)
-					    return !SelectedNode.IsExpanded;
-                    break;
+                    return (IsParent(SelectedNode) ? !SelectedNode.IsExpanded : false);
 
 				case ExpandNode.ExpandSelectionAll:
-                    if (SelectedNode != null)
-					    return (!SelectedNode.IsExpanded || IsAnyNodeCollapsed(SelectedNode.Nodes));
-                    break;
+                    return (IsParent(SelectedNode) ? (!SelectedNode.IsExpanded || IsAnyNodeCollapsed(SelectedNode.Nodes)) : false);
 					
 				case ExpandNode.CollapseAll:
 					return IsAnyNodeExpanded(RootNode.Nodes);
 
 				case ExpandNode.CollapseSelection:
-                    if (SelectedNode != null)
-					    return (!IsRoot(SelectedNode) && SelectedNode.IsExpanded);
-                    break;
+				    return (IsParent(SelectedNode) && !IsRoot(SelectedNode) && SelectedNode.IsExpanded);
 			}
 
 			return false;
