@@ -878,9 +878,6 @@ void CTDLTaskCtrlBase::OnUndoRedo(BOOL /*bUndo*/)
 {
 	// resync scroll pos
 	PostResync(m_lcColumns, FALSE);
-
-	// resync scrollbars
-//	PostResize(TRUE); 
 }
 
 void CTDLTaskCtrlBase::OnColumnVisibilityChange(const CTDCColumnIDMap& mapChanges)
@@ -4147,7 +4144,7 @@ int CTDLTaskCtrlBase::CalcSplitterPosToFitListColumns() const
 	CWnd::GetClientRect(rClient);
 
 	int nNewSplitPos = 0;
-	int nColsWidth = ((rLast.right - rFirst.left) + 10/*GetSplitterWidth()*/);
+	int nColsWidth = ((rLast.right - rFirst.left) + 10);
 
 	if (IsRight(m_lcColumns))
 	{
