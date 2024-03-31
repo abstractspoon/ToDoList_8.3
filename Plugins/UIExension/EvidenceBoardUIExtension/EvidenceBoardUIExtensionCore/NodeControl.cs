@@ -42,10 +42,12 @@ namespace EvidenceBoardUIExtension
 	{
 		public int NodeSpacing = 5;
 
-		int m_PinRadius = 2;
 		const int GraphBorder = 50;
+		const int ExpansionBtnBorder = 2;
 
 		readonly Point NullPoint = new Point(int.MinValue, int.MinValue);
+
+		int m_PinRadius = 2;
 
 		public int PinRadius
 		{
@@ -830,7 +832,7 @@ namespace EvidenceBoardUIExtension
 
 		protected Rectangle CalcExpansionButtonRect(Rectangle nodeRect)
 		{
-			int border = 2;
+			int border = ExpansionBtnBorder;
 			int btnSize = TreeViewUtils.ExpansionButtonSize;
 
 			if (SavingToImage)
@@ -1295,7 +1297,10 @@ namespace EvidenceBoardUIExtension
 		{
 			foreach (var node in HitTestableNodes)
 			{
-				if (CalcExpansionButtonRect(GetNodeClientRect(node)).Contains(ptClient))
+				var btnRect = CalcExpansionButtonRect(GetNodeClientRect(node));
+				btnRect.Inflate(ExpansionBtnBorder, ExpansionBtnBorder);
+
+				if (btnRect.Contains(ptClient))
 					return node;
 			}
 
