@@ -249,9 +249,16 @@ namespace MindMapUIExtension
 		}
 
 		void CollapseAll()
-		{// Collapse down to root's children
+		{
+			// Selection may have changed after a collapse
+			var prevSel = SelectedNode;
+
+			// Collapse down to root's children
 			foreach (TreeNode node in m_TreeView.Nodes[0].Nodes)
 				node.Collapse();
+
+			if (SelectedNode != prevSel)
+				SelectionChange?.Invoke(this, Item(SelectedNode).ItemData);
 		}
 
 		public bool CanExpand(ExpandNode expand)
@@ -563,7 +570,13 @@ namespace MindMapUIExtension
 
 						if (hit.IsExpanded)
 						{
+							// Selection may have changed after a collapse
+							var prevSel = SelectedNode;
+
 							hit.Collapse(true); // don't collapse children
+
+							if (SelectedNode != prevSel)
+								SelectionChange?.Invoke(this, Item(SelectedNode).ItemData);
 						}
 						else
 						{
