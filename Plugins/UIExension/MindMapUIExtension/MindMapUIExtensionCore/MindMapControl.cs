@@ -220,29 +220,25 @@ namespace MindMapUIExtension
 
 			switch (expand)
 			{
-				case ExpandNode.ExpandAll:
-					m_TreeView.ExpandAll();
-					break;
+			case ExpandNode.ExpandAll:
+				m_TreeView.ExpandAll();
+				break;
 
-				case ExpandNode.ExpandSelection:
-					SelectedNode.Expand();
-					break;
+			case ExpandNode.ExpandSelection:
+				SelectedNode.Expand();
+				break;
 
-				case ExpandNode.ExpandSelectionAll:
-					SelectedNode.ExpandAll();
-					break;
+			case ExpandNode.ExpandSelectionAll:
+				SelectedNode.ExpandAll();
+				break;
 
-				case ExpandNode.CollapseAll:
-					// Collapse down to root's children
-					foreach (TreeNode node in m_TreeView.Nodes[0].Nodes)
-					{
-						node.Collapse();
-					}
-					break;
+			case ExpandNode.CollapseAll:
+				CollapseAll();
+				break;
 
-				case ExpandNode.CollapseSelection:
-					if (!IsRoot(SelectedNode))
-						SelectedNode.Collapse(true); // don't collapse children
+			case ExpandNode.CollapseSelection:
+				if (!IsRoot(SelectedNode))
+					SelectedNode.Collapse(true); // don't collapse children
 				break;
 			}
 
@@ -252,6 +248,12 @@ namespace MindMapUIExtension
 			return true;
 		}
 
+		void CollapseAll()
+		{// Collapse down to root's children
+			foreach (TreeNode node in m_TreeView.Nodes[0].Nodes)
+				node.Collapse();
+		}
+
 		public bool CanExpand(ExpandNode expand)
 		{
 			if (m_TreeView.Nodes.Count == 0)
@@ -259,20 +261,20 @@ namespace MindMapUIExtension
 
 			switch (expand)
 			{
-				case ExpandNode.ExpandAll:
-					return IsAnyNodeCollapsed(RootNode.Nodes);
+			case ExpandNode.ExpandAll:
+				return IsAnyNodeCollapsed(RootNode.Nodes);
 
-				case ExpandNode.ExpandSelection:
-                    return (IsParent(SelectedNode) ? !SelectedNode.IsExpanded : false);
+			case ExpandNode.ExpandSelection:
+				return (IsParent(SelectedNode) ? !SelectedNode.IsExpanded : false);
 
-				case ExpandNode.ExpandSelectionAll:
-                    return (IsParent(SelectedNode) ? (!SelectedNode.IsExpanded || IsAnyNodeCollapsed(SelectedNode.Nodes)) : false);
-					
-				case ExpandNode.CollapseAll:
-					return IsAnyNodeExpanded(RootNode.Nodes);
+			case ExpandNode.ExpandSelectionAll:
+				return (IsParent(SelectedNode) ? (!SelectedNode.IsExpanded || IsAnyNodeCollapsed(SelectedNode.Nodes)) : false);
 
-				case ExpandNode.CollapseSelection:
-				    return (IsParent(SelectedNode) && !IsRoot(SelectedNode) && SelectedNode.IsExpanded);
+			case ExpandNode.CollapseAll:
+				return IsAnyNodeExpanded(RootNode.Nodes);
+
+			case ExpandNode.CollapseSelection:
+				return (IsParent(SelectedNode) && !IsRoot(SelectedNode) && SelectedNode.IsExpanded);
 			}
 
 			return false;
@@ -1088,45 +1090,45 @@ namespace MindMapUIExtension
 			// and collapsing items - native tree control behaviour
 			switch (e.KeyCode)
 			{
-				case Keys.Multiply:
-					if ((SelectedNode != null) && !IsRoot(SelectedNode))
-					{
-						SelectedNode.ExpandAll();
-						return;
-					}
-					break;
+			case Keys.Multiply:
+				if ((SelectedNode != null) && !IsRoot(SelectedNode))
+				{
+					SelectedNode.ExpandAll();
+					return;
+				}
+				break;
 
-				case Keys.Subtract:
-					if ((SelectedNode != null) && !IsRoot(SelectedNode))
-					{
-						SelectedNode.Collapse(true); // don't collapse children
-						return;
-					}
-					break;
+			case Keys.Subtract:
+				if ((SelectedNode != null) && !IsRoot(SelectedNode))
+				{
+					SelectedNode.Collapse(true); // don't collapse children
+					return;
+				}
+				break;
 			}
 
 			// else
 			base.OnKeyDown(e);
 		}
 
-        // Internals -----------------------------------------------------------
+		// Internals -----------------------------------------------------------
 
-        private int BorderWidth
-        {
-            get
-            {
-                switch (BorderStyle)
-                {
-                    case BorderStyle.FixedSingle:
-                        return 1;
+		private int BorderWidth
+		{
+			get
+			{
+				switch (BorderStyle)
+				{
+				case BorderStyle.FixedSingle:
+					return 1;
 
-                    case BorderStyle.Fixed3D:
-                        return 2;
-                }
+				case BorderStyle.Fixed3D:
+					return 2;
+				}
 
-                return 0;
-            }
-        }
+				return 0;
+			}
+		}
 
 		protected bool HoldRedraw
 		{
@@ -1280,25 +1282,25 @@ namespace MindMapUIExtension
 			{
                 TreeNode parentNode = null, afterSiblingNode = null;
 
-                switch (dropPos)
-                {
-                    case DropPos.On:
-                        parentNode = dropTarget;
-                        afterSiblingNode = null;
-                        break;
+				switch (dropPos)
+				{
+				case DropPos.On:
+					parentNode = dropTarget;
+					afterSiblingNode = null;
+					break;
 
-                    case DropPos.Above:
-                        parentNode = dropTarget.Parent;
-                        afterSiblingNode = dropTarget.PrevNode;
-                        break;
+				case DropPos.Above:
+					parentNode = dropTarget.Parent;
+					afterSiblingNode = dropTarget.PrevNode;
+					break;
 
-                    case DropPos.Below:
-                        parentNode = dropTarget.Parent;
-                        afterSiblingNode = dropTarget;
-                        break;
-                }
-                
-                var args = new MindMapDragEventArgs(draggedNode, parentNode, afterSiblingNode, copy);
+				case DropPos.Below:
+					parentNode = dropTarget.Parent;
+					afterSiblingNode = dropTarget;
+					break;
+				}
+
+				var args = new MindMapDragEventArgs(draggedNode, parentNode, afterSiblingNode, copy);
                 
 				// See if anyone wants to veto this move
 				if (!DoDrop(args))
@@ -1456,98 +1458,98 @@ namespace MindMapUIExtension
 
 			switch (key)
 			{
-				case Keys.Down:
-					if (selNode.NextNode != null)
+			case Keys.Down:
+				if (selNode.NextNode != null)
+					selNode = selNode.NextNode;
+				break;
+
+			case Keys.PageDown:
+				{
+					bool flipped = selItem.IsFlipped;
+					int pageCount = ((ClientRectangle.Height / m_TreeView.ItemHeight) - 1);
+
+					while (pageCount-- != 0)
+					{
+						if (selNode.NextNode == null)
+							break;
+
+						if (Item(selNode.NextNode).IsFlipped != flipped)
+							break;
+
 						selNode = selNode.NextNode;
-					break;
-
-				case Keys.PageDown:
-					{
-						bool flipped = selItem.IsFlipped;
-						int pageCount = ((ClientRectangle.Height / m_TreeView.ItemHeight) - 1);
-
-						while (pageCount-- != 0)
-						{
-							if (selNode.NextNode == null)
-								break;
-
-							if (Item(selNode.NextNode).IsFlipped != flipped)
-								break;
-
-							selNode = selNode.NextNode;
-						}
 					}
-					break;
+				}
+				break;
 
-				case Keys.Up:
-					if (selNode.PrevNode != null)
+			case Keys.Up:
+				if (selNode.PrevNode != null)
+					selNode = selNode.PrevNode;
+				break;
+
+			case Keys.PageUp:
+				{
+					bool flipped = selItem.IsFlipped;
+					int pageCount = ((ClientRectangle.Height / m_TreeView.ItemHeight) - 1);
+
+					while (pageCount-- != 0)
+					{
+						if (selNode.PrevNode == null)
+							break;
+
+						if (Item(selNode.PrevNode).IsFlipped != flipped)
+							break;
+
 						selNode = selNode.PrevNode;
-					break;
-
-				case Keys.PageUp:
-					{
-						bool flipped = selItem.IsFlipped;
-						int pageCount = ((ClientRectangle.Height / m_TreeView.ItemHeight) - 1);
-
-						while (pageCount-- != 0)
-						{
-							if (selNode.PrevNode == null)
-								break;
-
-							if (Item(selNode.PrevNode).IsFlipped != flipped)
-								break;
-
-							selNode = selNode.PrevNode;
-						}
 					}
-					break;
+				}
+				break;
 
-				case Keys.Left:
-					if (IsRoot(selNode))
-					{
-						selNode = FirstLeftNode();
-					}
-					else if (IsleftOfRoot(selNode))
-					{
-						if (IsParent(selNode))
-							selNode = selNode.FirstNode;
-					}
-					else if (IsRightOfRoot(selNode))
-					{
-//                         if (selNode.IsExpanded)
-//                             selNode.Collapse(); // same as tree-view
-//                         else
-    						selNode = selNode.Parent;
-					}
-					break;
+			case Keys.Left:
+				if (IsRoot(selNode))
+				{
+					selNode = FirstLeftNode();
+				}
+				else if (IsleftOfRoot(selNode))
+				{
+					if (IsParent(selNode))
+						selNode = selNode.FirstNode;
+				}
+				else if (IsRightOfRoot(selNode))
+				{
+					// if (selNode.IsExpanded)
+					//     selNode.Collapse(); // same as tree-view
+					// else
+					selNode = selNode.Parent;
+				}
+				break;
 
-				case Keys.Right:
-					if (IsRoot(selNode))
-					{
-						selNode = FirstRightNode();
-					}
-					else if (IsleftOfRoot(selNode))
-					{
-//                         if (selNode.IsExpanded)
-//                             selNode.Collapse(); // same as tree-view
-//                         else
-    						selNode = selNode.Parent;
-					}
-					else if (IsRightOfRoot(selNode))
-					{
-						if (IsParent(selNode))
-							selNode = selNode.FirstNode;
-					}
-					break;
+			case Keys.Right:
+				if (IsRoot(selNode))
+				{
+					selNode = FirstRightNode();
+				}
+				else if (IsleftOfRoot(selNode))
+				{
+					// if (selNode.IsExpanded)
+					//     selNode.Collapse(); // same as tree-view
+					// else
+					selNode = selNode.Parent;
+				}
+				else if (IsRightOfRoot(selNode))
+				{
+					if (IsParent(selNode))
+						selNode = selNode.FirstNode;
+				}
+				break;
 
-				case Keys.End:
-					break;
+			case Keys.End:
+				break;
 
-				case Keys.Home:
-					break;
+			case Keys.Home:
+				break;
 
-				default:
-					return false;
+			default:
+				return false;
 			}
 
 			SelectedNode = selNode;
@@ -2193,20 +2195,20 @@ namespace MindMapUIExtension
 			format.LineAlignment = StringAlignment.Center;
 			format.Trimming = StringTrimming.None;
 
-            switch (nodePos)
-            {
-                case NodeDrawPos.Root:
-                    format.Alignment = StringAlignment.Center;
-                    break;
+			switch (nodePos)
+			{
+			case NodeDrawPos.Root:
+				format.Alignment = StringAlignment.Center;
+				break;
 
-                case NodeDrawPos.Right:
-                    format.Alignment = StringAlignment.Near;
-                    break;
+			case NodeDrawPos.Right:
+				format.Alignment = StringAlignment.Near;
+				break;
 
-                case NodeDrawPos.Left:
-                    format.Alignment = StringAlignment.Far;
-                    break;
-            }
+			case NodeDrawPos.Left:
+				format.Alignment = StringAlignment.Far;
+				break;
+			}
 
 			return format;
 		}
@@ -2220,19 +2222,19 @@ namespace MindMapUIExtension
 
 			switch (nodeState)
 			{
-				case NodeDrawState.Selected:
-                    graphics.FillRectangle(SystemBrushes.Highlight, rect);
-					textColor = SystemBrushes.HighlightText;
-					break;
+			case NodeDrawState.Selected:
+				graphics.FillRectangle(SystemBrushes.Highlight, rect);
+				textColor = SystemBrushes.HighlightText;
+				break;
 
-				case NodeDrawState.DropTarget:
-					graphics.FillRectangle(SystemBrushes.ControlLight, rect);
-					break;
+			case NodeDrawState.DropTarget:
+				graphics.FillRectangle(SystemBrushes.ControlLight, rect);
+				break;
 
-				case NodeDrawState.None:
-					if (DebugMode())
-						graphics.DrawRectangle(new Pen(Color.Green), rect);
-					break;
+			case NodeDrawState.None:
+				if (DebugMode())
+					graphics.DrawRectangle(new Pen(Color.Green), rect);
+				break;
 
 			}
 
@@ -2275,73 +2277,73 @@ namespace MindMapUIExtension
             MindMapItem item = Item(node);
             Rectangle insertionMark = GetItemDrawRect(item.ItemBounds);
 
-            switch (m_DropPos)
-            {
-				case DropPos.Above:
+			switch (m_DropPos)
+			{
+			case DropPos.Above:
+				{
+					int defaultYPos = (insertionMark.Top - (InsertionMarkerHeight / 2));
+
+					if (node.PrevNode != null)
 					{
-						int defaultYPos = (insertionMark.Top - (InsertionMarkerHeight / 2));
+						MindMapItem prevItem = Item(node.PrevNode);
 
-						if (node.PrevNode != null)
+						if (item.IsFlipped == prevItem.IsFlipped)
 						{
-							MindMapItem prevItem = Item(node.PrevNode);
+							// Place halfway between
+							Rectangle prevRect = GetItemDrawRect(prevItem.ItemBounds);
 
-							if (item.IsFlipped == prevItem.IsFlipped)
-							{
-								// Place halfway between
-								Rectangle prevRect = GetItemDrawRect(prevItem.ItemBounds);
-
-								insertionMark.X = Math.Min(insertionMark.X, prevRect.X);
-								insertionMark.Y = ((insertionMark.Top + prevRect.Bottom - InsertionMarkerHeight) / 2);
-								insertionMark.Width = Math.Max(insertionMark.Width, prevRect.Width);
-							}
-							else
-							{
-								insertionMark.Y = defaultYPos;
-							}
+							insertionMark.X = Math.Min(insertionMark.X, prevRect.X);
+							insertionMark.Y = ((insertionMark.Top + prevRect.Bottom - InsertionMarkerHeight) / 2);
+							insertionMark.Width = Math.Max(insertionMark.Width, prevRect.Width);
 						}
 						else
 						{
 							insertionMark.Y = defaultYPos;
 						}
 					}
-
-                    break;
-
-				case DropPos.Below:
+					else
 					{
-						int defaultYPos = (insertionMark.Bottom - (InsertionMarkerHeight / 2));
+						insertionMark.Y = defaultYPos;
+					}
+				}
 
-						if (node.NextNode != null)
+				break;
+
+			case DropPos.Below:
+				{
+					int defaultYPos = (insertionMark.Bottom - (InsertionMarkerHeight / 2));
+
+					if (node.NextNode != null)
+					{
+						MindMapItem nextItem = Item(node.NextNode);
+
+						if (item.IsFlipped == nextItem.IsFlipped)
 						{
-							MindMapItem nextItem = Item(node.NextNode);
+							Rectangle nextRect = GetItemDrawRect(nextItem.ItemBounds);
 
-							if (item.IsFlipped == nextItem.IsFlipped)
-							{
-								Rectangle nextRect = GetItemDrawRect(nextItem.ItemBounds);
-
-								insertionMark.X = Math.Min(insertionMark.X, nextRect.X);
-								insertionMark.Y = ((insertionMark.Bottom + nextRect.Top - InsertionMarkerHeight) / 2);
-								insertionMark.Width = Math.Max(insertionMark.Width, nextRect.Width);
-							}
-							else
-							{
-								insertionMark.Y = defaultYPos;
-							}
+							insertionMark.X = Math.Min(insertionMark.X, nextRect.X);
+							insertionMark.Y = ((insertionMark.Bottom + nextRect.Top - InsertionMarkerHeight) / 2);
+							insertionMark.Width = Math.Max(insertionMark.Width, nextRect.Width);
 						}
 						else
 						{
 							insertionMark.Y = defaultYPos;
 						}
 					}
-					break;
-            }
+					else
+					{
+						insertionMark.Y = defaultYPos;
+					}
+				}
+				break;
+			}
 
-            insertionMark.Height = InsertionMarkerHeight;
+			insertionMark.Height = InsertionMarkerHeight;
 
-            return insertionMark;
-        }
+			return insertionMark;
+		}
 
-        private void DrawInsertionMarker(Graphics graphics, TreeNode node)
+		private void DrawInsertionMarker(Graphics graphics, TreeNode node)
         {
             if (node == m_DropTarget)
             {
