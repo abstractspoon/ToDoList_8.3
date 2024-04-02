@@ -1363,21 +1363,12 @@ void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(BOOL bCustomOnly)
 	RecalcUntrackedColumnWidths(mapCols, TRUE, bCustomOnly);
 }
 
-void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColIDs, BOOL bZeroOthers, BOOL bCustomOnly)
+int CTDLTaskCtrlBase::RemoveUntrackedColumns(CTDCColumnIDMap& mapCols) const
 {
-	if (!m_bEnableRecalcColumns)
-		return;
-
-	if (!bZeroOthers && !aColIDs.GetCount())
-		return;
-
 	// PERMANENT LOGGING //////////////////////////////////////////////
-	CScopedLogTimer log(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(start)"));
-	log.LogStart();
+	CScopedLogTimer log(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(Weed out tracked columns)"));
 	///////////////////////////////////////////////////////////////////
-	
-	// Weed out all the tracked columns
-	CTDCColumnIDMap mapCols(aColIDs);
+
 	int nNumCols = m_hdrColumns.GetItemCount();
 
 	for (int nItem = 1; nItem < nNumCols; nItem++)
@@ -1389,11 +1380,27 @@ void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColID
 		}
 	}
 
-	// PERMANENT LOGGING //////////////////////////////////////////////
-	log.LogTimeElapsed(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(Weed out tracked columns)"));
-	///////////////////////////////////////////////////////////////////
+	return mapCols.GetCount();
+}
 
-	if (!bZeroOthers && !mapCols.GetCount())
+void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColIDs, BOOL bZeroOthers, BOOL bCustomOnly)
+{
+	if (!m_bEnableRecalcColumns)
+		return;
+
+	if (!bZeroOthers && !aColIDs.GetCount())
+		return;
+
+	// PERMANENT LOGGING //////////////////////////////////////////////
+	CScopedLogTimer log(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths()"));
+	log.LogStart();
+	///////////////////////////////////////////////////////////////////
+	
+	// Weed out all the tracked columns
+	CTDCColumnIDMap mapCols(aColIDs);
+	int nNumCols = RemoveUntrackedColumns(mapCols);
+	
+	if (!bZeroOthers && !nNumCols)
 		return;
 
 	CHoldRedraw hr(m_lcColumns);
@@ -1405,7 +1412,7 @@ void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColID
 	BOOL bVisibleTasksOnly = IsTreeList();
 
 	// Optimise for single columns
-	if (!bZeroOthers && (mapCols.GetCount() == 1))
+	if (!bZeroOthers && (nNumCols == 1))
 	{
 		int nCol = GetColumnIndex(mapCols.GetFirst());
 		ASSERT(nCol != -1);
@@ -1418,10 +1425,6 @@ void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColID
 		// Get the longest task values for the remaining attributes
 		CTDCLongestItemMap mapLongest;
 		m_find.GetLongestValues(mapCols, mapLongest, bVisibleTasksOnly);
-
-		// PERMANENT LOGGING //////////////////////////////////////////////
-		log.LogTimeElapsed(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(GetLongestValues)"));
-		///////////////////////////////////////////////////////////////////
 
 		CHoldRedraw hr(m_hdrColumns);
 		m_hdrColumns.SetItemWidth(0, 0); // always
@@ -1475,10 +1478,6 @@ void CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(const CTDCColumnIDMap& aColID
 
 			m_hdrColumns.SetItemWidth(nItem, nColWidth);
 		}
-
-		// PERMANENT LOGGING //////////////////////////////////////////////
-		log.LogTimeElapsed(_T("CTDLTaskCtrlBase::RecalcUntrackedColumnWidths(SetItemWidths)"));
-		///////////////////////////////////////////////////////////////////
 	}
 
 	// cleanup
@@ -5404,10 +5403,6 @@ int CTDLTaskCtrlBase::CalcColumnWidth(int nCol, CDC* pDC, BOOL bVisibleTasksOnly
 	// handle hidden columns
 	if (!IsColumnShowing(nColID))
  		return 0;
-	
-	// PERMANENT LOGGING //////////////////////////////////////////////
-	CScopedLogTimer log(_T("CTDLTaskCtrlBase::CalcColumnWidth(%s)"), GetColumnName(nColID));
-	///////////////////////////////////////////////////////////////////
 	
 	int nColWidth = 0; // equivalent to MINCOLWIDTH
 	
