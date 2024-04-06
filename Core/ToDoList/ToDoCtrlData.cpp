@@ -2415,8 +2415,6 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 // Internal
 TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmount, TDC_UNITS nUnits, DWORD dwFlags)
 {
-	ASSERT((nUnits != TDCU_HOURS) && (nUnits != TDCU_MINS));
-
 	BOOL bFitToRecurringScheme = Misc::HasFlag(dwFlags, OFFSET_FITTORECURRINGSCHEME);
 	BOOL bAndSubtasks = Misc::HasFlag(dwFlags, OFFSET_SUBTASKS);
 	BOOL bFromToday = Misc::HasFlag(dwFlags, OFFSET_FROMTODAY);
@@ -2432,42 +2430,37 @@ TDC_SET CToDoCtrlData::OffsetTaskDate(DWORD dwTaskID, TDC_DATE nDate, int nAmoun
 		COleDateTime date = (bFromToday ? dh.GetDate(DHD_TODAY) : pTDI->GetDate(nDate));
 		BOOL bModTimeOnly = ((nUnits == TDCU_HOURS) || (nUnits == TDCU_MINS));
 
-		switch (nUnits)
+		if (nAmount != 0)
 		{
-		case TDCU_HOURS:
+			if (bModTimeOnly)
 			{
-				ASSERT(nAmount);
+				// Modify time only
 				ASSERT(date.m_dt < 1.0);
 
-				// Modify time only
-				date.m_dt += (nAmount / 24.0);
-			}
-			break;
-
-		case TDCU_MINS:
-			{
-				ASSERT(nAmount);
-				ASSERT(date.m_dt < 1.0);
-
-				// Modify time only
-				date.m_dt += (nAmount / (24.0 * 60));
-			}
-			break;
-
-		default: // All the rest
-			{
-				// Modify date AND time
-				if (nAmount)
-					VERIFY(dh.OffsetDate(date, nAmount, TDC::MapUnitsToDHUnits(nUnits), TRUE)); // Preserve end of month
-
-				// Special case: Task is recurring and the date was changed -> must fall on a valid date
-				if (bFitToRecurringScheme)
+				switch (TDC::MapUnitsToTHUnits(nUnits))
 				{
-					ASSERT(pTDI->IsRecurring());
-					pTDI->trRecurrence.FitDayToScheme(date);
+				case THU_HOURS:
+					date.m_dt += (nAmount / 24.0);
+					break;
+
+				case THU_MINS:
+					date.m_dt += (nAmount / (24.0 * 60));
+					break;
+
+				default:
+					ASSERT(0);
 				}
 			}
-			break;
+			else // Modify date AND time
+			{
+				VERIFY(CDateHelper().OffsetDate(date, nAmount, TDC::MapUnitsToDHUnits(nUnits)));
+			}
+		}
+
+		// Special case: Task is recurring and the date was changed -> must fall on a valid date
+		if (bFitToRecurringScheme && pTDI->IsRecurring() && !bModTimeOnly)
+		{
+			pTDI->trRecurrence.FitDayToScheme(date);
 		}
 
 		nRes = SetTaskDate(dwTaskID, pTDI, nDate, date, TRUE); // Recalc time estimate
