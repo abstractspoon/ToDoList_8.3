@@ -11336,7 +11336,11 @@ BOOL CToDoCtrl::EditSelectedTaskDependency()
 		CTaskFile tasks;
 		GetTasks(tasks, filter);
 
-		if (m_eDependency.DoEdit(tasks, 
+		CDWordArray aSelTaskIDs;
+		m_taskTree.GetSelectedTaskIDs(aSelTaskIDs, TRUE);
+
+		if (m_eDependency.DoEdit(aSelTaskIDs,
+								 tasks, 
 								 m_ilTaskIcons, 
 								 HasStyle(TDCS_SHOWPARENTSASFOLDERS), 
 								 HasStyle(TDCS_AUTOADJUSTDEPENDENCYDATES)))
