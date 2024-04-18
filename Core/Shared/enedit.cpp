@@ -45,15 +45,15 @@ CEnEdit::EDITBTN::EDITBTN()
 
 IMPLEMENT_DYNAMIC(CEnEdit, CMaskEdit)
 
-CEnEdit::CEnEdit(BOOL bComboStyle, LPCTSTR szMask, DWORD dwFlags) : 
-					CMaskEdit(szMask, dwFlags),
-					m_bComboStyle(bComboStyle),
-					m_bFirstShow(TRUE), 
-					m_nButtonDown(-1),
-					m_bParentIsCombo(-1),
-					m_nBottomBorder(0),
-					m_nTopBorder(0),
-					m_nDefaultBtn(-1)
+CEnEdit::CEnEdit(LPCTSTR szMask, DWORD dwMaskFlags) 
+	: 
+	CMaskEdit(szMask, dwMaskFlags),
+	m_bFirstShow(TRUE),
+	m_nButtonDown(-1),
+	m_bParentIsCombo(-1),
+	m_nBottomBorder(0),
+	m_nTopBorder(0),
+	m_nDefaultBtn(-1)
 {
 }
 
@@ -61,7 +61,6 @@ CEnEdit::~CEnEdit()
 {
 	FreeButtonResources();
 }
-
 
 BEGIN_MESSAGE_MAP(CEnEdit, CMaskEdit)
 	//{{AFX_MSG_MAP(CEnEdit)
@@ -203,7 +202,7 @@ BOOL CEnEdit::InitializeImageLists()
 {
 	if (!m_ilBtns.GetSafeHandle() && !m_ilDisabledBtns.GetSafeHandle())
 	{
-		int nImageSize = 16;//GraphicsMisc::ScaleByDPIFactor(16);
+		const int nImageSize = 16;
 
 		for (int nBtn = 0; nBtn < m_aButtons.GetSize(); nBtn++)
 		{
@@ -805,11 +804,9 @@ void CEnEdit::DrawButton(CDC* pDC, const CRect& rWindow, int nBtn, const CPoint&
 
 	rBtn.OffsetRect(-rWindow.TopLeft());
 
-	// nasty business here because the API function DrawThemeEdge() is not theme aware!
-	// and drawing a themed combostyle button will also draw the arrow which we don't want
-	if (!m_bComboStyle || bThemed)	// draw as button type (for now)
+	if (bThemed)
 	{
-		UINT nFlags = DFCS_ADJUSTRECT | DFCS_BUTTONPUSH;
+		UINT nFlags = DFCS_ADJUSTRECT;
 		
 		// note: we do not take account of ES_READONLY as the effect of this
 		// is not deterministic at this level so we assume derived classes or 
@@ -826,15 +823,10 @@ void CEnEdit::DrawButton(CDC* pDC, const CRect& rWindow, int nBtn, const CPoint&
 		{
 			nFlags |= DFCS_HOT;
 		}
-
-		// clip the drawing rect to prevent window getting the parent bkgnd color wrong
-		CRect rClip(rBtn);
-
-		if (bThemed)
-			rBtn.InflateRect(1, 1);
 		
-		// for now
-		CThemed::DrawFrameControl(this, pDC, rBtn, DFC_BUTTON, nFlags, rClip);
+		// Always draw button using Combo-stype theming for consistency
+		// across Windows XP, 7, 10 and 11
+		CThemed::DrawFrameControl(this, pDC, rBtn, DFC_COMBONOARROW, nFlags);
 	}
 	else // unthemed combo style
 	{
@@ -853,7 +845,7 @@ void CEnEdit::DrawButton(CDC* pDC, const CRect& rWindow, int nBtn, const CPoint&
 	if (eb.bDropMenu)
 	{
 		CRect rArrow(rBtn);
-		UINT nFlags = DT_END_ELLIPSIS | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP;
+		UINT nFlags = DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP;
 
 		if (eb.sCaption.IsEmpty())
 		{
@@ -898,11 +890,15 @@ void CEnEdit::DrawButton(CDC* pDC, const CRect& rWindow, int nBtn, const CPoint&
 		
 		pDC->SetTextAlign((eb.bSymbol ? TA_LEFT : TA_CENTER) | TA_TOP);
 		pDC->SetBkMode(TRANSPARENT);
-		
-		int nCharHeight = pDC->GetTextExtent("A").cy;
-		int nVOffset = ((rBtn.Height() - nCharHeight + 1) / 2) - (bThemed ? 0 : 1);
-		int nHOffset = eb.bSymbol ? -2 : (rBtn.Width() + 1) / 2;
 
+		int nVOffset = 0, nHOffset = (eb.bSymbol ? -2 : (rBtn.Width() + 1) / 2);
+
+		if (eb.sCaption != _T("..."))
+		{
+			int nCharHeight = pDC->GetTextExtent("A").cy;
+			nVOffset = (((rBtn.Height() - nCharHeight + 1) / 2) - (bThemed ? 0 : 1));
+		}
+		
 		// if the button has a drop menu position the text in the 
 		// center of what remains
 		if (eb.bDropMenu)
@@ -915,8 +911,6 @@ void CEnEdit::DrawButton(CDC* pDC, const CRect& rWindow, int nBtn, const CPoint&
 		if (pOld)
 			pDC->SelectObject(pOld);
 	}
-
-	pDC->ExcludeClipRect(rBtn);
 }
 
 void CEnEdit::DrawEnabledText(CDC* pDC, const CPoint& ptTopLeft, const CString& sText, 

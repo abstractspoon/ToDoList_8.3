@@ -5,11 +5,11 @@
 #include "InputListCtrl.h"
 #include "themed.h"
 #include "enstring.h"
-#include "osversion.h"
 #include "graphicsmisc.h"
 #include "misc.h"
 #include "enimagelist.h"
 #include "dlgunits.h"
+#include "osversion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -780,13 +780,14 @@ BOOL CInputListCtrl::DrawButton(CDC* pDC, int nRow, int nCol, CRect& rButton, BO
 	{
 		case ILCT_DROPLIST:
 		case ILCT_DATE:
-			CThemed::DrawFrameControl(this, pDC, rButton, DFC_SCROLL, (DFCS_SCROLLCOMBOBOX | dwState));
+			CThemed::DrawFrameControl(this, pDC, rButton, DFC_COMBO, dwState);
 			break;
 					
 		case ILCT_POPUPMENU:
 			{
-				CThemed::DrawFrameControl(this, pDC, rButton, DFC_BUTTON, (DFCS_BUTTONPUSH | dwState));
+				CThemed::DrawFrameControl(this, pDC, rButton, DFC_COMBONOARROW, dwState);
 
+				// Draw arrow
 				pDC->SetTextColor(GetSysColor(bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT));
 
 				UINT nFlags = DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_NOCLIP | DT_CENTER;
@@ -796,14 +797,16 @@ BOOL CInputListCtrl::DrawButton(CDC* pDC, int nRow, int nCol, CRect& rButton, BO
 
 		case ILCT_BROWSE:
 			{
-				CThemed::DrawFrameControl(this, pDC, rButton, DFC_BUTTON, (DFCS_BUTTONPUSH | dwState));
+				CThemed::DrawFrameControl(this, pDC, rButton, DFC_COMBONOARROW, dwState);
 
-				// Make rect sides even for better centering of ellipsis
-				rButton.left += (rButton.Width() % 2);
-				rButton.top += (rButton.Height() % 2);
+				// Draw ellipsis
+				CRect rText(rButton);
+
+				rText.left += (rText.Width() % 2);
+				rText.top += (rText.Height() % 2);
 
 				pDC->SetTextColor(GetSysColor(bEnabled ? COLOR_BTNTEXT : COLOR_GRAYTEXT));
-				pDC->DrawText("...", rButton, DT_CENTER | DT_VCENTER);
+				pDC->DrawText(_T("..."), rText, DT_CENTER | DT_VCENTER);
 			}
 			break;
 			
@@ -827,46 +830,32 @@ BOOL CInputListCtrl::GetButtonRect(int nRow, int nCol, CRect& rButton) const
 {
 	rButton.SetRectEmpty();
 
-	IL_COLUMNTYPE nType = GetCellType(nRow, nCol);
-
-	if (nType == ILCT_TEXT || !CanEditCell(nRow, nCol))
+	if (!CanEditCell(nRow, nCol))
 		return FALSE;
-	
+
+	IL_COLUMNTYPE nType = GetCellType(nRow, nCol);
 	GetCellRect(nRow, nCol, rButton);
 
-	// tweaks
 	switch (nType)
 	{
-		case ILCT_BROWSE:
-			rButton.left = (rButton.right - BTN_WIDTH);
+	case ILCT_BROWSE:
+	case ILCT_POPUPMENU:
+	case ILCT_DROPLIST:
+	case ILCT_DATE:
+		rButton.left = (rButton.right - BTN_WIDTH);
+		break;
 
-			// Windows 10 (maybe Windows 8/8.1) shrinks buttons
-			// by a pixel all round which looks inconsistent
-			// with all other controls so we experiment with
-			// enlarging the button appropriately
-			if (COSVersion() >= OSV_WIN8)
-				rButton.InflateRect(1, 1);
-			break;
+	case ILCT_CHECK:
+		rButton.left += ((rButton.Width() - BTN_WIDTH) / 2);
+		rButton.right = (rButton.left + BTN_WIDTH);
+		break;
 
-		case ILCT_DROPLIST:
-		case ILCT_DATE:
-			rButton.left = (rButton.right - BTN_WIDTH);
-			break;
+	case ILCT_TEXT:
+		return FALSE;
 
-		case ILCT_POPUPMENU:
-			rButton.right++;
-			rButton.left = (rButton.right - BTN_WIDTH - 2);
-			rButton.top--;
-			break;
-
-		case ILCT_CHECK:
-			rButton.left += ((rButton.Width() - BTN_WIDTH) / 2);
-			rButton.right = (rButton.left + BTN_WIDTH);
-			break;
-
-		default:
-			rButton.SetRectEmpty();
-			return FALSE;
+	default:
+		ASSERT(0);
+		return FALSE;
 	}
 
 	return TRUE;

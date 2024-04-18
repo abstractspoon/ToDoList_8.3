@@ -24,7 +24,7 @@ static char THIS_FILE[]=__FILE__;
 
 CTDLTaskDependencyEdit::CTDLTaskDependencyEdit() 
 	: 
-	CEnEdit(TRUE, _T("0123456789, "), ME_LOCALIZESEPARATOR),
+	CEnEdit(_T("0123456789, "), ME_LOCALIZESEPARATOR),
 	m_bNotifyingParent(FALSE)
 {
 }
@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(CTDLTaskDependencyEdit, CEnEdit)
 	ON_CONTROL_REFLECT_EX(EN_CHANGE, OnChange)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_KILLFOCUS()
+
 END_MESSAGE_MAP()
 //////////////////////////////////////////////////////////////////////
 
