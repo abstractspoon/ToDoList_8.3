@@ -304,8 +304,6 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_MOVECOL_UP           "\nMove Column Up"
-    ID_MOVECOL_DOWN         "\nMove Column Down"
     IDS_STATUSATTRIB        "Status"
     IDS_CUSTOMATTRIB        "%s (Custom)"
     IDS_COLUMNTITLE         "Column Title"
