@@ -1025,7 +1025,6 @@ void CToDoListWnd::InitShortcutManager()
 {
 	// setup defaults first
 	m_mgrShortcuts.AddShortcut(ID_CLOSE,							VK_F4,			HOTKEYF_CONTROL);
-	m_mgrShortcuts.AddShortcut(ID_COMMENTS_INSERTDATETIME,			'D',			HOTKEYF_CONTROL);
 	m_mgrShortcuts.AddShortcut(ID_DELETETASK,						VK_DELETE,		HOTKEYF_EXT);
 	m_mgrShortcuts.AddShortcut(ID_EDIT_CLOCK_TASK,					'T',			HOTKEYF_CONTROL);
 	m_mgrShortcuts.AddShortcut(ID_EDIT_COPY,						'C',			HOTKEYF_CONTROL);
