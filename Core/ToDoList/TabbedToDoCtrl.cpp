@@ -1976,15 +1976,6 @@ BOOL CTabbedToDoCtrl::ProcessUIExtensionMod(const IUITASKMOD& mod, CDWordArray& 
 		}
 		break;
 
-	case TDCA_CUSTOMATTRIB:	
-		{
-			if (dwTaskID)
-				bChange = (SET_CHANGE == m_data.SetTaskCustomAttributeData(dwTaskID, mod.szCustomAttribID, mod.szValue));
-			else
-				bChange = SetSelectedTaskCustomAttributeData(mod.szCustomAttribID, mod.szValue, FALSE);
-		}
-		break;
-
 	case TDCA_METADATA:
 		{
 			IUIExtensionWindow* pExtWnd = GetExtensionWnd(GetTaskView());
@@ -2011,7 +2002,17 @@ BOOL CTabbedToDoCtrl::ProcessUIExtensionMod(const IUITASKMOD& mod, CDWordArray& 
 		break;
 
 	default:
-		ASSERT(0);
+		if (TDCCUSTOMATTRIBUTEDEFINITION::IsCustomAttribute(m_nExtModifyingAttrib) && !Misc::IsEmpty(mod.szCustomAttribID))
+		{
+			if (dwTaskID)
+				bChange = (SET_CHANGE == m_data.SetTaskCustomAttributeData(dwTaskID, mod.szCustomAttribID, mod.szValue));
+			else
+				bChange = SetSelectedTaskCustomAttributeData(mod.szCustomAttribID, mod.szValue, FALSE);
+		}
+		else
+		{
+			ASSERT(0);
+		}
 		break;
 	}
 
