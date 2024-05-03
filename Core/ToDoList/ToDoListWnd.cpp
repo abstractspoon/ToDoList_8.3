@@ -1099,22 +1099,6 @@ void CToDoListWnd::InitShortcutManager()
 
 	if (m_mgrShortcuts.Initialize(this, prefs, _T("KeyboardShortcuts")))
 	{
-		// fix for previously adding escape key as a shortcut for IDCLOSE 
-		// (big mistake)
-		if (m_mgrShortcuts.GetShortcut(IDCLOSE) == VK_ESCAPE)
-			m_mgrShortcuts.DeleteShortcut(IDCLOSE);
-
-		// fix for paste being wrongly set up
-		if (m_mgrShortcuts.GetShortcut(ID_EDIT_PASTE))
-		{
-			// delete existing
-			m_mgrShortcuts.DeleteShortcut(ID_EDIT_PASTE);
-
-			// if nothing already assigned use Ctrl+V
-			if (!m_mgrShortcuts.GetShortcut(ID_EDIT_PASTESUB))
-				m_mgrShortcuts.AddShortcut(ID_EDIT_PASTESUB, 'V', HOTKEYF_CONTROL);
-		}
-
 		m_mgrShortcuts.SetRemindersUseTreeFont(Prefs().GetRemindersUseTreeFont());
 		m_mgrShortcuts.SetFindTasksUseTreeFont(Prefs().GetFindTasksUseTreeFont());
 	}
