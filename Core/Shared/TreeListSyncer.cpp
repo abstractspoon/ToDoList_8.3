@@ -467,11 +467,6 @@ void CTreeListSyncer::Unsync()
 	m_hwndPrimaryHeader = NULL;
 }
 
-// void CTreeListSyncer::ForceNcCalcSize(HWND hwnd)
-// {
-// 	::SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-// }
-
 void CTreeListSyncer::EnableResync(BOOL bEnable, HWND hwnd) 
 { 
 	m_bResyncEnabled = bEnable; 
@@ -479,9 +474,7 @@ void CTreeListSyncer::EnableResync(BOOL bEnable, HWND hwnd)
 	if (bEnable && hwnd)
 	{
 		::SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-
 		PostResync(hwnd, TRUE);
-//		PostResize();
 	}
 }
 
@@ -815,9 +808,6 @@ void CTreeListSyncer::InitItemHeights()
 			// handle other window
 			if (nItemHeight != nOtherItemHeight)
 			{
-				//if (OsIsXP())
-				//	nItemHeight--;
-
 				ImageList_Destroy(m_hilSize);
 				m_hilSize = ImageList_Create(1, (nItemHeight - 1), ILC_COLOR, 1, 1);
 
