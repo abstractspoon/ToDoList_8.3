@@ -543,12 +543,13 @@ BOOL CTDCTaskTimeLogAnalysis::AnalyseByDate(const COleDateTime& dtFrom,
 											CMapIDToTimeAndPeriodArray& aPeriods) const
 {
 	// sanity check
-	ASSERT(m_aLogItems.GetSize());
-
 	int nNumItems = m_aLogItems.GetSize();
 
 	if (nNumItems == 0)
+	{
+		ASSERT(0);
 		return FALSE;
+	}
 
 	// Build a map of days since this is our 
 	// smallest unit of breakdown
