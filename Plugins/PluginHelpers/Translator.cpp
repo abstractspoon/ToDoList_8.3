@@ -132,8 +132,9 @@ void Translator::Translate(Control::ControlCollection^ items)
 	{
 		auto ctrl = items[nItem];
 
-		// Special cases
+		// Non-translatables
 		if (ISTYPE(ctrl, Windows::Forms::WebBrowser) ||
+			ISTYPE(ctrl, DateTimePicker) ||
 			ISTYPE(ctrl, TextBox) ||
 			ISTYPE(ctrl, RichTextBox))
 		{
