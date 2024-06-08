@@ -4629,14 +4629,9 @@ TDC_FILE CToDoListWnd::OpenTaskList(CFilteredToDoCtrl* pTDC, LPCTSTR szFilePath,
 	ASSERT(FileMisc::FileExists(sFilePath));
 
 	BOOL bWasDelayed = pTDC->IsDelayLoaded();
-	TDC_FILE nOpen = pTDC->Load(sFilePath, tasks, m_sMasterPassword);
+	BOOL bReloading = pTDC->HasFilePath();
 
-	// cleanup temp storage file
-	if (nType == TDCPP_STORAGE)
-	{
-		ASSERT(FileMisc::IsTempFilePath(sFilePath));
-		FileMisc::DeleteFile(sFilePath, TRUE);
-	}
+	TDC_FILE nOpen = pTDC->Load(sFilePath, tasks, m_sMasterPassword);
 
 	if (nOpen == TDCF_SUCCESS)
 	{
@@ -4691,7 +4686,7 @@ TDC_FILE CToDoListWnd::OpenTaskList(CFilteredToDoCtrl* pTDC, LPCTSTR szFilePath,
 		UpdateFindDialogActiveTasklist(pTDC);
 
 		// Update time tracking widget
-		if (bWasDelayed)
+		if (bWasDelayed || bReloading)
 			m_dlgTimeTracker.SetTasks(pTDC, tasks);
 		else
 			m_dlgTimeTracker.AddTasklist(pTDC, tasks);
@@ -6174,16 +6169,27 @@ void CToDoListWnd::OnReload()
 	RefreshTabOrder();
 }
 
+void CToDoListWnd::OnUpdateReload(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl()));
+}
+
 BOOL CToDoListWnd::ReloadTaskList(int nIndex, BOOL bNotifyDueTasks, BOOL bNotifyError)
 {
 	CFilteredToDoCtrl& tdc = GetToDoCtrl(nIndex);
 	CString sFilePath = tdc.GetFilePath();
 
-	// Remove the tasklist from the time tracker because
-	// OpenTasklist will (correctly) want to re-add it
-	m_dlgTimeTracker.RemoveTasklist(&tdc);
-	
-	TDC_FILE nRes = OpenTaskList(&tdc, sFilePath);
+	TSM_TASKLISTINFO storageInfo;
+
+	if (m_mgrToDoCtrls.GetStorageDetails(nIndex, storageInfo))
+	{
+		sFilePath = storageInfo.EncodeInfo(Prefs().GetSaveStoragePasswords());
+
+		// Clear the local filename so that the tasklist is retrieved again
+		storageInfo.ClearLocalFilePath();
+	}
+
+	TDC_FILE nRes = OpenTaskList(&tdc, sFilePath, &storageInfo);
 	
 	if (nRes == TDCF_SUCCESS)
 	{
@@ -6211,11 +6217,6 @@ BOOL CToDoListWnd::ReloadTaskList(int nIndex, BOOL bNotifyDueTasks, BOOL bNotify
 	}
 
 	return (nRes == TDCF_SUCCESS);
-}
-
-void CToDoListWnd::OnUpdateReload(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl()));
 }
 
 void CToDoListWnd::OnSize(UINT nType, int cx, int cy) 
@@ -6529,7 +6530,6 @@ void CToDoListWnd::ReposTabBar(CDeferWndMove* pDwm, CRect& rAvailable)
 	rTabs = rAvailable;
 	rTabs.right++;
 	rTabs.bottom = rTabs.top + nTabHeight;
-//	rTabs.OffsetRect(0, rAvailable.y - rTabs.top); // add a pixel between tabbar and toolbar
 
 	BOOL bNeedTabCtrl = WantTasklistTabbarVisible();
 
@@ -13099,10 +13099,12 @@ void CToDoListWnd::OnUpdateEditRedo(CCmdUI* pCmdUI)
 void CToDoListWnd::OnEditUndoRedo(BOOL bUndo)
 {
 	CFilteredToDoCtrl& tdc = GetToDoCtrl();
-	tdc.UndoLastAction(bUndo);
 	
-	UpdateStatusBar();
-	UpdateTimeTrackerTasks(TRUE);
+	if (tdc.UndoLastAction(bUndo))
+	{
+		UpdateStatusBar();
+		UpdateTimeTrackerTasks(TRUE);
+	}
 }
 
 void CToDoListWnd::OnUpdateEditUndoRedo(CCmdUI* pCmdUI, BOOL bUndo)
@@ -13550,7 +13552,8 @@ void CToDoListWnd::OnToolsSelectinExplorer()
 
 void CToDoListWnd::OnUpdateToolsSelectinExplorer(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl()));
+	// Exclude tasklists using storage
+	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl(), FALSE));
 }
 
 void CToDoListWnd::OnToolsRemovefromsourcecontrol() 
@@ -13726,7 +13729,8 @@ void CToDoListWnd::OnToolsCopyTasklistPath()
 
 void CToDoListWnd::OnUpdateToolsCopyTasklistPath(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl()));
+	// Exclude tasklists using storage
+	pCmdUI->Enable(m_mgrToDoCtrls.HasFilePath(GetSelToDoCtrl(), FALSE));
 }
 
 void CToDoListWnd::OnMoveSelectTaskDependencies()

@@ -128,8 +128,11 @@ BOOL CToDoCtrlMgr::TDCITEM::IsSelectable() const
 	return (!HasFilePath() || bLoaded || FileMisc::FileExists(pTDC->GetFilePath()));
 }
 
-BOOL CToDoCtrlMgr::TDCITEM::HasFilePath() const
+BOOL CToDoCtrlMgr::TDCITEM::HasFilePath(BOOL bIncStorage) const
 {
+	if (!bIncStorage && UsesStorage())
+		return FALSE;
+
 	return pTDC->HasFilePath();
 }
 
@@ -449,11 +452,11 @@ void CToDoCtrlMgr::ClearFilePath(int nIndex)
 	GetToDoCtrl(nIndex).ClearFilePath();
 }
 
-BOOL CToDoCtrlMgr::HasFilePath(int nIndex) const
+BOOL CToDoCtrlMgr::HasFilePath(int nIndex, BOOL bIncStorage) const
 {
 	CHECKVALIDINDEXRET(nIndex, FALSE);
 
-	return GetTDCItem(nIndex).HasFilePath();
+	return GetTDCItem(nIndex).HasFilePath(bIncStorage);
 }
 
 TDCM_PATHTYPE CToDoCtrlMgr::GetFilePathType(int nIndex) const
@@ -870,6 +873,13 @@ int CToDoCtrlMgr::DeleteToDoCtrl(int nIndex)
 				prefs.DeleteProfileEntry(sKey, _T("TabColor"));
 			else
 				prefs.WriteProfileInt(sKey, _T("TabColor"), tdci.crTab);
+		}
+
+		// cleanup temp storage file
+		if (tdci.UsesStorage())
+		{
+			ASSERT(FileMisc::IsTempFilePath(tdci.storageinfo.szLocalFileName));
+			FileMisc::DeleteFile(tdci.storageinfo.szLocalFileName, TRUE);
 		}
 	}
 	
@@ -1319,7 +1329,7 @@ COLORREF CToDoCtrlMgr::GetTabColor(int nIndex) const
 	if (!m_tabCtrl.IsSupportedFlag(TCE_TABCOLORS))
 	{
 		ASSERT(0);
-		return FALSE;
+		return CLR_NONE;
 	}
 	
 	CHECKVALIDINDEXRET(nIndex, CLR_NONE);

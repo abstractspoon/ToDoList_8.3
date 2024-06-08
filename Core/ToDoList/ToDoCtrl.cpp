@@ -6321,7 +6321,7 @@ TDC_FILE CToDoCtrl::Load(const CString& sFilePath, CTaskFile& tasks/*out*/, LPCT
 	
 	if (tasks.Load(sFilePath, NULL, FALSE)) // don't decrypt
 	{
-		m_sourceControl.InitialiseState(tasks);
+		m_sourceControl.Initialise(tasks);
 
 		BOOL bWantCheckout = (HasStyle(TDCS_CHECKOUTONLOAD) &&
 								m_sourceControl.IsSourceControlled() && 
@@ -11847,6 +11847,9 @@ LRESULT CToDoCtrl::OnChangeColour(WPARAM /*wp*/, LPARAM /*lp*/)
 
 BOOL CToDoCtrl::CanUndoLastAction(BOOL bUndo) const 
 { 
+	if (IsReadOnly())
+		return FALSE;
+
 	// handle comments field
 	if (m_ctrlComments.HasFocus())
 		return (m_nCommentsState != CS_CLEAN);
@@ -11867,6 +11870,9 @@ BOOL CToDoCtrl::CanUndoLastAction(BOOL bUndo) const
 
 BOOL CToDoCtrl::UndoLastAction(BOOL bUndo)
 {
+	if (IsReadOnly())
+		return FALSE;
+
 	// handle comments field
 	if (m_ctrlComments.HasFocus())
 		return bUndo ? m_ctrlComments.Undo() : m_ctrlComments.Redo();
