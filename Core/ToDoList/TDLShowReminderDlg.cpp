@@ -62,6 +62,31 @@ CTDLShowReminderListCtrl::CTDLShowReminderListCtrl(const CTDCReminderMap& mapRem
 {
 }
 
+BEGIN_MESSAGE_MAP(CTDLShowReminderListCtrl, CEnListCtrl)
+	ON_WM_SIZE()
+END_MESSAGE_MAP()
+
+void CTDLShowReminderListCtrl::OnSize(UINT nType, int cx, int cy)
+{
+	CEnListCtrl::OnSize(nType, cx, cy);
+
+	RecalcColumnWidths();
+}
+
+void CTDLShowReminderListCtrl::RecalcColumnWidths()
+{
+	CRect rAvail;
+	GetClientRect(rAvail);
+
+	int nCol = NUM_COLS, nTotalColWidth = GetHeader()->CalcTotalItemWidth();
+	double dFactor = (double)rAvail.Width() / nTotalColWidth;
+
+	nCol = NUM_COLS;
+
+	while (nCol--)
+		SetColumnWidth(nCol, (int)(GetColumnWidth(nCol) * dFactor));
+}
+
 int CTDLShowReminderListCtrl::CompareItems(DWORD dwItemData1, DWORD dwItemData2, int nSortColumn) const
 {
 	if (nSortColumn == WHEN_COL)
@@ -185,10 +210,18 @@ BOOL CTDLShowReminderDlg::OnInitDialog()
 	ResizeChild(&m_dtcSnoozeDate, 0, GetChildHeight(&m_cbSnoozeFor) - GetChildHeight(&m_dtcSnoozeDate));
 
 	// create list columns
-	m_lcReminders.InsertColumn(TASK_COL, CEnString(IDS_REMINDER_TASKCOL), LVCFMT_LEFT, GraphicsMisc::ScaleByDPIFactor(200));
-	m_lcReminders.InsertColumn(TASKPARENT_COL, CEnString(IDS_REMINDER_TASKPARENTCOL), LVCFMT_LEFT, GraphicsMisc::ScaleByDPIFactor(75));
-	m_lcReminders.InsertColumn(TASKLIST_COL, CEnString(IDS_REMINDER_TASKLISTCOL), LVCFMT_LEFT, GraphicsMisc::ScaleByDPIFactor(75));
-	m_lcReminders.InsertColumn(WHEN_COL, CEnString(IDS_REMINDER_WHENCOL), LVCFMT_LEFT, GraphicsMisc::ScaleByDPIFactor(150));
+	CPreferences prefs;
+	CString sColWidths = prefs.GetProfileString(m_sPrefsKey, _T("ColWidths"), _T("10|5|5|10"));
+
+	CDWordArray aWidths;
+	Misc::Split(sColWidths, aWidths, '|');
+
+	m_lcReminders.InsertColumn(TASK_COL, CEnString(IDS_REMINDER_TASKCOL), LVCFMT_LEFT, (int)aWidths[0]);
+	m_lcReminders.InsertColumn(TASKPARENT_COL, CEnString(IDS_REMINDER_TASKPARENTCOL), LVCFMT_LEFT, (int)aWidths[1]);
+	m_lcReminders.InsertColumn(TASKLIST_COL, CEnString(IDS_REMINDER_TASKLISTCOL), LVCFMT_LEFT, (int)aWidths[2]);
+	m_lcReminders.InsertColumn(WHEN_COL, CEnString(IDS_REMINDER_WHENCOL), LVCFMT_LEFT, (int)aWidths[3]);
+
+	m_lcReminders.RecalcColumnWidths();
 
 	ListView_SetExtendedListViewStyleEx(m_lcReminders, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 	ListView_SetExtendedListViewStyleEx(m_lcReminders, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
@@ -199,11 +232,8 @@ BOOL CTDLShowReminderDlg::OnInitDialog()
 	m_lcReminders.SetSortEmptyValuesBelow(FALSE);
 
 	EnableControls();
-	UpdateColumnWidths();
 
 	// Restore sort state
-	CPreferences prefs;
-
 	int nSortCol = prefs.GetProfileInt(m_sPrefsKey, _T("SortCol"), -1);
 
 	if (nSortCol != -1)
@@ -211,18 +241,24 @@ BOOL CTDLShowReminderDlg::OnInitDialog()
 		m_lcReminders.SetSortColumn(nSortCol, FALSE);
 		m_lcReminders.SetSortAscending(prefs.GetProfileInt(m_sPrefsKey, _T("SortAscending"), TRUE));
 	}
-
+	
 	return TRUE;
 }
 
 void CTDLShowReminderDlg::OnDestroy()
 {
-	// Save sort state
+	// Save state
 	CPreferences prefs;
 
 	prefs.WriteProfileInt(m_sPrefsKey, _T("SortCol"), m_lcReminders.GetSortColumn());
 	prefs.WriteProfileInt(m_sPrefsKey, _T("SortAscending"), m_lcReminders.GetSortAscending());
 
+	CIntArray aColWidths;
+	m_lcReminders.GetHeader()->GetItemWidths(aColWidths);
+
+	prefs.WriteProfileString(m_sPrefsKey, _T("ColWidths"), Misc::FormatArrayT(aColWidths, _T("%d"), '|'));
+
+	// Cleanup
 	RemoveAllListReminders();
 
 	CTDLDialog::OnDestroy();
@@ -683,27 +719,4 @@ void CTDLShowReminderDlg::OnRepositionControls(int dx, int dy)
 	OffsetCtrl(this, IDC_SNOOZEFOR, 0, dy);
 	OffsetCtrl(this, IDC_SNOOZEUNTILDATE, 0, dy);
 	OffsetCtrl(this, IDC_SNOOZEUNTILTIME, 0, dy);
-
-	UpdateColumnWidths();
-}
-
-void CTDLShowReminderDlg::UpdateColumnWidths()
-{
-	CRect rAvail;
-	m_lcReminders.GetClientRect(rAvail);
-
-	int nCol = (NUM_COLS - 1), nTotalColWidth = 0;
-
-	while (nCol--)
-		nTotalColWidth += m_lcReminders.GetColumnWidth(nCol);
-
-	// The 'when' column is essentially of fixed width so we leave it alone
-	int nAvailWidth = (rAvail.Width() - m_lcReminders.GetColumnWidth(WHEN_COL));
-
-	double dFactor = (double)nAvailWidth / nTotalColWidth;
-
-	nCol = (NUM_COLS - 1);
-
-	while (nCol--)
-		m_lcReminders.SetColumnWidth(nCol, (int)(m_lcReminders.GetColumnWidth(nCol) * dFactor));
 }

@@ -30,8 +30,14 @@ class CTDLShowReminderListCtrl : public CEnListCtrl
 public:
 	CTDLShowReminderListCtrl(const CTDCReminderMap& mapReminders);
 
+	void RecalcColumnWidths();
+
 protected:
 	const CTDCReminderMap& m_mapReminders;
+
+protected:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	DECLARE_MESSAGE_MAP()
 
 protected:
 	virtual int CompareItems(DWORD dwItemData1, DWORD dwItemData2, int nSortColumn) const;
@@ -127,7 +133,6 @@ protected:
 	void EnableControls();
 	void UpdateControls();
 	void UpdateTitleText();
-	void UpdateColumnWidths();
 	void SnoozeReminders(BOOL bAll);
 	void RestoreFocusToList(int nPrevSel);
 };
