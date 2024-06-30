@@ -11348,6 +11348,13 @@ BOOL CToDoCtrl::EditSelectedTaskDependency()
 		{
 			// Check for circular dependencies
 			// TODO
+
+			// If only the lead-in time has changed then OnChangeDependency
+			// will not have been called so we are forced to do a manual
+			// update which should silently do nothing if it's already
+			// been handled
+			UpdateTask(TDCA_DEPENDENCY);
+			return TRUE;
 		}
 	}
 

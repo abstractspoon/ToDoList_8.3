@@ -62,7 +62,14 @@ BOOL CTDLTaskDependencyEdit::UpdateDepends()
 BOOL CTDLTaskDependencyEdit::UpdateDepends(const CTDCDependencyArray& aDepends)
 {
 	if (m_aDepends.MatchAll(aDepends, FALSE))
+	{
+		if (!m_aDepends.MatchAll(aDepends, TRUE))
+		{
+			m_aDepends.Copy(aDepends);
+			return TRUE;
+		}
 		return FALSE;
+	}
 
 	// Remove deleted dependencies
 	int nDepend = m_aDepends.GetSize();
