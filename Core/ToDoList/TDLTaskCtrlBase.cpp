@@ -1323,7 +1323,7 @@ BOOL CTDLTaskCtrlBase::BuildColumns()
 
 void CTDLTaskCtrlBase::EnableRecalcColumns(BOOL bEnable)
 {
-	if ((bEnable && !m_bEnableRecalcColumns) || (!bEnable && m_bEnableRecalcColumns))
+	if (Misc::StateChanged(bEnable, m_bEnableRecalcColumns))
 	{
 		m_bEnableRecalcColumns = bEnable;
 
