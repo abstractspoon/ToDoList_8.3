@@ -14,6 +14,7 @@
 #include "ToDoCtrlDataDefines.h"
 #include "TDCTaskCompletion.h"
 #include "TDCContentMgr.h"
+#include "TDCCustomAttributeDef.h"
 
 #include "..\shared\holdredraw.h"
 #include "..\shared\datehelper.h"
@@ -2004,10 +2005,22 @@ BOOL CTabbedToDoCtrl::ProcessUIExtensionMod(const IUITASKMOD& mod, CDWordArray& 
 	default:
 		if (TDCCUSTOMATTRIBUTEDEFINITION::IsCustomAttribute(mod.nAttrib) && !Misc::IsEmpty(mod.szCustomAttribID))
 		{
-			if (dwTaskID)
-				bChange = (SET_CHANGE == m_data.SetTaskCustomAttributeData(dwTaskID, mod.szCustomAttribID, mod.szValue));
+			const TDCCUSTOMATTRIBUTEDEFINITION* pDef = NULL;
+			GET_DEF_RET(m_aCustomAttribDefs, mod.szCustomAttribID, pDef, FALSE);
+
+			TDCCADATA data(mod.szValue);
+
+			if (!pDef->ValidateData(data))
+			{
+				ASSERT(0);
+			}
 			else
-				bChange = SetSelectedTaskCustomAttributeData(mod.szCustomAttribID, mod.szValue, FALSE);
+			{
+				if (dwTaskID)
+					bChange = (SET_CHANGE == m_data.SetTaskCustomAttributeData(dwTaskID, mod.szCustomAttribID, data));
+				else
+					bChange = SetSelectedTaskCustomAttributeData(mod.szCustomAttribID, data);
+			}
 		}
 		else
 		{

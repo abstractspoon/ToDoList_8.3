@@ -123,6 +123,7 @@ struct TDCCUSTOMATTRIBUTEDEFINITION
 
 	BOOL SupportsFeature(DWORD dwFeature) const;
 	BOOL IsAggregated() const;
+	BOOL ValidateData(TDCCADATA& data) const;
 
 	BOOL SetCalculation(const TDCCUSTOMATTRIBUTECALCULATION& calc);
 	const TDCCUSTOMATTRIBUTECALCULATION& Calculation() const { return calculation; }
