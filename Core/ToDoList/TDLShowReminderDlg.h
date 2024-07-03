@@ -61,7 +61,6 @@ public:
 	BOOL UpdateListReminder(const TDCREMINDER& rem);
 	void RemoveListReminder(const TDCREMINDER& rem);
 	void RemoveListReminders(const CFilteredToDoCtrl& tdc);
-	void RemoveAllListReminders();
 	int GetListReminders(const CFilteredToDoCtrl& tdc, CTDCReminderArray& aRem) const;
 
 	BOOL GetWantSnoozeUntil() const { return m_bSnoozeUntil; }

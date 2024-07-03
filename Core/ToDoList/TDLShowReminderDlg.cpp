@@ -259,7 +259,10 @@ void CTDLShowReminderDlg::OnDestroy()
 	prefs.WriteProfileString(m_sPrefsKey, _T("ColWidths"), Misc::FormatArrayT(aColWidths, _T("%d"), '|'));
 
 	// Cleanup
-	RemoveAllListReminders();
+	ASSERT(m_mapReminders.GetCount() == m_lcReminders.GetItemCount());
+
+	m_lcReminders.DeleteAllItems();
+	m_mapReminders.RemoveAll();
 
 	CTDLDialog::OnDestroy();
 }
@@ -370,14 +373,6 @@ void CTDLShowReminderDlg::RemoveListReminders(const CFilteredToDoCtrl& tdc)
 		HideWindow();
 	
 	UpdateTitleText();
-}
-
-void CTDLShowReminderDlg::RemoveAllListReminders()
-{
-	ASSERT(m_mapReminders.GetCount() == m_lcReminders.GetItemCount());
-	
-	m_lcReminders.DeleteAllItems();
-	m_mapReminders.RemoveAll();
 }
 
 int CTDLShowReminderDlg::FindListReminder(const TDCREMINDER& rem)
