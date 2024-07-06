@@ -570,7 +570,7 @@ CString CPreferencesDlg::GetItemPath(HTREEITEM hti) const
 	
 	while (hti)
 	{
-		sPath = m_tcPages.GetItemText(hti) + " > " + sPath;
+		sPath = m_tcPages.GetItemText(hti) + _T(" > ") + sPath;
 		hti = m_tcPages.GetParentItem(hti);
 	}
 	
