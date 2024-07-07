@@ -223,16 +223,16 @@ namespace Calendar
 					dateAtCursor = dateAtCursor.Add(m_delta);
 
 					int hoursDiff = dateAtCursor.Subtract(selection.StartDate).Hours;
-					TimeSpan apptLen = selection.Length;
 
 					if (hoursDiff != 0)
 					{
 						System.DateTime newStart = selection.StartDate.AddHours(hoursDiff);
 
+						// Check for a change
 						if (newStart != selection.StartDate)
 						{
 							selection.StartDate = newStart;
-							selection.EndDate = (newStart + apptLen);
+							selection.EndDate = (newStart + m_length);
 
 							return true;
 						}
