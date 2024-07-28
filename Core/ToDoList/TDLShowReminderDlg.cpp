@@ -96,12 +96,18 @@ int CTDLShowReminderListCtrl::CompareItems(DWORD dwItemData1, DWORD dwItemData2,
 		VERIFY(m_mapReminders.Lookup(dwItemData1, rem1));
 		VERIFY(m_mapReminders.Lookup(dwItemData2, rem2));
 
+		// Sort reminders by 'urgency'
 		COleDateTime dt1, dt2;
 
-		VERIFY(rem1.GetReminderDate(dt1, FALSE));
-		VERIFY(rem2.GetReminderDate(dt2, FALSE));
+		BOOL bHasDate1 = (rem1.bRelative ? rem1.GetRelativeToDate(dt1) : rem1.GetReminderDate(dt1));
+		BOOL bHasDate2 = (rem2.bRelative ? rem2.GetRelativeToDate(dt2) : rem2.GetReminderDate(dt2));
 
-		return CDateHelper::Compare(dt1, dt2);
+		int nCompare = CompareEmptiness(!bHasDate1, !bHasDate2);
+
+		if (nCompare == 0)
+			nCompare = CDateHelper::Compare(dt1, dt2);
+
+		return nCompare;
 	}
 
 	// All else

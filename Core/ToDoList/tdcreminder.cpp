@@ -194,6 +194,18 @@ void TDCREMINDER::Load(const IPreferences* pPrefs, LPCTSTR szKey)
 	sStickiesID = pPrefs->GetProfileString(szKey, _T("StickiesID"));
 }
 
+BOOL TDCREMINDER::GetRelativeToDate(COleDateTime& date) const
+{
+	ASSERT(pTDC);
+	ASSERT(dwTaskID);
+
+	if (!bRelative)
+		return FALSE;
+
+	date = pTDC->GetTaskDate(dwTaskID, (nRelativeFromWhen == TDCR_DUEDATE) ? TDCD_DUE : TDCD_START);
+	return CDateHelper::IsDateSet(date);
+}
+
 BOOL TDCREMINDER::GetReminderDate(COleDateTime& date, BOOL bIncludeSnooze) const
 {
 	date = dtAbsolute;
@@ -203,19 +215,8 @@ BOOL TDCREMINDER::GetReminderDate(COleDateTime& date, BOOL bIncludeSnooze) const
 		ASSERT(pTDC);
 		ASSERT(dwTaskID);
 		
-		if (nRelativeFromWhen == TDCR_DUEDATE)
-		{
-			date = pTDC->GetTaskDate(dwTaskID, TDCD_DUE);
-		}
-		else // start date
-		{
-			date = pTDC->GetTaskDate(dwTaskID, TDCD_START);
-		}
-		
-		if (CDateHelper::IsDateSet(date))
-		{
+		if (GetRelativeToDate(date))
 			date -= dRelativeDaysLeadIn;
-		}
 	}
 	
 	if (CDateHelper::IsDateSet(date))
