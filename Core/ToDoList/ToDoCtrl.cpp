@@ -8141,13 +8141,10 @@ void CToDoCtrl::OnChangePercent()
 BOOL CToDoCtrl::IsClipboardEmpty(BOOL bCheckID) const
 {
 	if (CTaskClipboard::IsEmpty())
-	{
 		return TRUE;
-	}
-	else if (bCheckID)
-	{
+
+	if (bCheckID)
 		return !CTaskClipboard::ClipIDMatches(GetClipboardID());
-	}
 
 	//else
 	return FALSE;
