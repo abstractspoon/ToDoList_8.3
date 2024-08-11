@@ -16,15 +16,17 @@ class CTaskClipboard
 public:
 	static void Reset();
 	static BOOL IsEmpty();
-	static BOOL SetTasks(const CTaskFile& tasks, const CString& sID, const CString& sTaskTitles);
 	static BOOL ClipIDMatches(const CString& sID);
+	static BOOL SetTasks(const CTaskFile& tasks, const CString& sID, const CString& sTaskTitles, const CDWordArray& aSelTaskIDs);
 
 	static int GetTasks(CTaskFile& tasks, const CString& sID);
+	static int GetTasks(CTaskFile& tasks, const CString& sID, CDWordArray& aSelTaskIDs);
 	static int GetTaskCount(const CString& sID = _T(""));
 
 protected:
 	static CString GetClipID();
 	static UINT GetTaskClipFmt();
+	static UINT GetSelTaskIDsFmt();
 	static UINT GetIDClipFmt();
 	static HWND GetMainWnd();
 	static void RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOOL bAndSiblings);

@@ -16,8 +16,9 @@ static char THIS_FILE[]=__FILE__;
 
 //////////////////////////////////////////////////////////////////////
 
-const LPCTSTR TDL_CLIPFMTTASKS = _T("CF_TODOLIST_TASKS");
-const LPCTSTR TDL_CLIPFMTID = _T("CF_TODOLIST_ID");
+const LPCTSTR TDLCF_TASKS = _T("CF_TODOLIST_TASKS");
+const LPCTSTR TDLCF_SELTASKIDS = _T("CF_TODOLIST_SELTASKIDS");
+const LPCTSTR TDLCF_ID = _T("CF_TODOLIST_ID");
 const LPCTSTR DEF_CLIPID = _T("_emptyID_");
 
 //////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ BOOL CTaskClipboard::IsEmpty()
 	return !CClipboard::HasFormat(GetIDClipFmt());
 }
 
-BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const CString& sTaskTitles)
+BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const CString& sTaskTitles, const CDWordArray& aSelTaskIDs)
 {
 	ASSERT(tasks.GetTaskCount());
 	ASSERT(!sTaskTitles.IsEmpty());
@@ -49,6 +50,7 @@ BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const 
 
 		return (cb.SetText(sXML, GetTaskClipFmt()) && 
 				cb.SetText(sClipID, GetIDClipFmt()) &&
+				cb.SetText(Misc::FormatArray(aSelTaskIDs, '|'), GetSelTaskIDsFmt()) &&
 				cb.SetText(sTaskTitles));
 	}
 	
@@ -63,17 +65,25 @@ BOOL CTaskClipboard::ClipIDMatches(const CString& sID)
 
 int CTaskClipboard::GetTasks(CTaskFile& tasks, const CString& sID)
 {
+	return GetTasks(tasks, sID, CDWordArray());
+}
+
+int CTaskClipboard::GetTasks(CTaskFile& tasks, const CString& sID, CDWordArray& aSelTaskIDs)
+{
 	if (IsEmpty())
 		return 0;
 
-	CString sXML = CClipboard().GetText(GetTaskClipFmt()); 
+	CClipboard cb;
+	CString sXML = cb.GetText(GetTaskClipFmt()); 
 	
 	if (!tasks.LoadContent(sXML))
 		return 0;
 
-	CString sClipID = (sID.IsEmpty() ? DEF_CLIPID : sID);
+	Misc::Split(cb.GetText(GetSelTaskIDsFmt()), aSelTaskIDs, '|');
 
 	// remove task references if the clip IDs do not match
+	CString sClipID = (sID.IsEmpty() ? DEF_CLIPID : sID);
+
 	if (sClipID.CompareNoCase(GetClipID()) != 0)
 		RemoveTaskReferences(tasks, tasks.GetFirstTask(), TRUE);
 
@@ -130,13 +140,19 @@ CString CTaskClipboard::GetClipID()
 
 UINT CTaskClipboard::GetTaskClipFmt()
 {
-	static UINT nClip = ::RegisterClipboardFormat(TDL_CLIPFMTTASKS);
+	static UINT nClip = ::RegisterClipboardFormat(TDLCF_TASKS);
+	return nClip;
+}
+
+UINT CTaskClipboard::GetSelTaskIDsFmt()
+{
+	static UINT nClip = ::RegisterClipboardFormat(TDLCF_SELTASKIDS);
 	return nClip;
 }
 
 UINT CTaskClipboard::GetIDClipFmt()
 {
-	static UINT nClip = ::RegisterClipboardFormat(TDL_CLIPFMTID);
+	static UINT nClip = ::RegisterClipboardFormat(TDLCF_ID);
 	return nClip;
 }
 
