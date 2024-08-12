@@ -7376,7 +7376,7 @@ BOOL CToDoCtrl::DropSelectedTasks(DD_DROPEFFECT nDrop, HTREEITEM htiDropTarget, 
 
 				// fix up the dependencies of the copied tasks
 				if (bDropRefs)
-					PrepareTaskIDsForPasteAsRef(tasks);
+					PrepareTasksForPasteAsRef(tasks);
 				else
 					PrepareTasksForPaste(tasks, TDCR_YES, TRUE);
 
@@ -7452,11 +7452,23 @@ void CToDoCtrl::PrepareTasksForPaste(CTaskFile& tasks, TDC_RESETIDS nResetID, BO
 	PrepareTasksForPaste(tasks, tasks.GetFirstTask(NULL), bResetCreation, mapID, TRUE);
 }
 
-void CToDoCtrl::PrepareTaskIDsForPasteAsRef(CTaskFile& tasks) const
+void CToDoCtrl::PrepareTasksForPasteAsRef(CTaskFile& tasks, const CDWordArray& aSelTaskIDs) const
 {
 	if (tasks.GetTaskCount() == 0)
 		return; // nothing to do
 
+	// remove tasks not originally selected
+	if (aSelTaskIDs.GetSize());
+	{
+		RemoveNonSelectedTasks(aSelTaskIDs, tasks, tasks.GetFirstTask());
+
+		if (tasks.GetTaskCount() == 0)
+			return; // nothing to do
+	}
+
+	// pre-process the tasks to add themselves
+	// as a reference, and then to clear the task ID
+	// so that it gets a newly allocated one
 	CMapID2ID mapID;
 	mapID.InitHashTable(tasks.GetTaskCount());
 
@@ -8326,18 +8338,7 @@ BOOL CToDoCtrl::PasteTasks(TDC_PASTE nWhere, BOOL bAsRef)
 	
 	if (bAsRef)
 	{
-		// remove tasks not originally selected
-		ASSERT(aSelTaskIDs.GetSize());
-
-		CDWordSet mapSelTaskIDs;
-		mapSelTaskIDs.CopyFrom(aSelTaskIDs);
-
-		RemoveNonSelectedTasks(mapSelTaskIDs, tasks, tasks.GetFirstTask());
-		
-		// pre-process the tasks to add themselves
-		// as a reference, and then to clear the task ID
-		// so that it gets a newly allocated one
-		PrepareTaskIDsForPasteAsRef(tasks);
+		PrepareTasksForPasteAsRef(tasks, aSelTaskIDs);
 	}
 	else
 	{
