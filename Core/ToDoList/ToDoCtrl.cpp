@@ -8195,7 +8195,7 @@ BOOL CToDoCtrl::CopySelectedTasks() const
 	CDWordArray aSelTaskIDs;
 	GetSelectedTaskIDs(aSelTaskIDs, FALSE);
 
-	return CTaskClipboard::SetTasks(tasks, GetClipboardID(), Misc::FormatArray(aTitles, '\n'), aSelTaskIDs);
+	return CTaskClipboard::SetTasks(tasks, GetClipboardID(), aSelTaskIDs, Misc::FormatArray(aTitles, '\n'));
 }
 
 BOOL CToDoCtrl::CopySelectedTask() const
