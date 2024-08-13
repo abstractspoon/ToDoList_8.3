@@ -82,7 +82,7 @@ int CTaskClipboard::GetTasks(CTaskFile& tasks, const CString& sID, CDWordArray& 
 	CClipboard cb;
 	CString sXML = cb.GetText(GetTaskClipFmt()); 
 	
-	if (!tasks.LoadContent(sXML))
+	if (!tasks.LoadContent(sXML) || !tasks.GetTaskCount())
 		return 0;
 
 	aSelTaskIDs.Copy(s_aSelTaskIDs);
@@ -124,8 +124,10 @@ void CTaskClipboard::RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOO
 	if (!hTask)
 		return;
 
-	// handle next sibling first in case we want to delete hTask
-	// WITHOUT RECURSION
+	// process children first before their parent is potentially removed
+	RemoveTaskReferences(tasks, tasks.GetFirstTask(hTask), TRUE, mapSelTaskIDs);
+
+	// Handle siblings WITHOUT RECURSION
 	if (bAndSiblings)
 	{
 		HTASKITEM hSibling = tasks.GetNextTask(hTask);
@@ -147,10 +149,6 @@ void CTaskClipboard::RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOO
 	{
 		mapSelTaskIDs.Remove(tasks.GetTaskID(hTask));
 		tasks.DeleteTask(hTask);
-	}
-	else // process children
-	{
-		RemoveTaskReferences(tasks, tasks.GetFirstTask(hTask), TRUE, mapSelTaskIDs);
 	}
 }
 
