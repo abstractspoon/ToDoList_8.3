@@ -291,7 +291,6 @@ BOOL CThemed::DrawUnthemedFrameControl(CDC* pDC, const CRect& rect, UINT nType, 
 	}
 
 	return pDC->DrawFrameControl((LPRECT)(LPCRECT)rect, nType, nState);
-
 }
 
 BOOL CThemed::DrawEdge(const CWnd* pWnd, CDC* pDC, const CRect& rect, UINT nType, UINT nState, UINT nEdge, UINT nFlags)
