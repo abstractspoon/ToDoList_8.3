@@ -778,7 +778,7 @@ BOOL CInputListCtrl::DrawButton(CDC* pDC, int nRow, int nCol, CRect& rButton, BO
 
 	switch (nType)
 	{
-		case ILCT_DROPLIST:
+		case ILCT_COMBO:
 		case ILCT_DATE:
 			CThemed::DrawFrameControl(this, pDC, rButton, DFC_COMBO, dwState);
 			break;
@@ -840,7 +840,7 @@ BOOL CInputListCtrl::GetButtonRect(int nRow, int nCol, CRect& rButton) const
 	{
 	case ILCT_BROWSE:
 	case ILCT_POPUPMENU:
-	case ILCT_DROPLIST:
+	case ILCT_COMBO:
 	case ILCT_DATE:
 		rButton.left = (rButton.right - BTN_WIDTH);
 		break;
@@ -1329,7 +1329,7 @@ void CInputListCtrl::GetCellEditRect(int nRow, int nCol, CRect& rCell)
 	{
 	case ILCT_TEXT:
 	case ILCT_BROWSE:
-	case ILCT_DROPLIST:
+	case ILCT_COMBO:
 		//rCell.right++;
 		
 		// move top edge up one pixel so that it looks right
