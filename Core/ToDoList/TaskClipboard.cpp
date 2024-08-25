@@ -16,9 +16,12 @@ static char THIS_FILE[]=__FILE__;
 
 //////////////////////////////////////////////////////////////////////
 
-const LPCTSTR TDL_CLIPFMTTASKS = _T("CF_TODOLIST_TASKS");
-const LPCTSTR TDL_CLIPFMTID = _T("CF_TODOLIST_ID");
+const LPCTSTR TDLCF_TASKS = _T("CF_TODOLIST_TASKS");
+const LPCTSTR TDLCF_ID = _T("CF_TODOLIST_ID");
 const LPCTSTR DEF_CLIPID = _T("_emptyID_");
+//////////////////////////////////////////////////////////////////////
+
+CDWordArray CTaskClipboard::s_aSelTaskIDs;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -26,6 +29,8 @@ void CTaskClipboard::Reset()
 {
 	if (!IsEmpty())
 		::EmptyClipboard();
+
+	s_aSelTaskIDs.RemoveAll();
 }
 
 BOOL CTaskClipboard::IsEmpty()
@@ -33,7 +38,7 @@ BOOL CTaskClipboard::IsEmpty()
 	return !CClipboard::HasFormat(GetIDClipFmt());
 }
 
-BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const CString& sTaskTitles)
+BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const CDWordArray& aSelTaskIDs, const CString& sTaskTitles)
 {
 	ASSERT(tasks.GetTaskCount());
 	ASSERT(!sTaskTitles.IsEmpty());
@@ -46,10 +51,13 @@ BOOL CTaskClipboard::SetTasks(const CTaskFile& tasks, const CString& sID, const 
 		sClipID.MakeUpper();
 
 		CClipboard cb(GetMainWnd());
-
-		return (cb.SetText(sXML, GetTaskClipFmt()) && 
-				cb.SetText(sClipID, GetIDClipFmt()) &&
-				cb.SetText(sTaskTitles));
+		if (cb.SetText(sXML, GetTaskClipFmt()) && 
+			cb.SetText(Misc::ToUpper(sID), GetIDClipFmt()) &&
+			cb.SetText(sTaskTitles))
+		{
+			s_aSelTaskIDs.Copy(aSelTaskIDs);
+			return TRUE;
+		}
 	}
 	
 	// else
@@ -63,19 +71,41 @@ BOOL CTaskClipboard::ClipIDMatches(const CString& sID)
 
 int CTaskClipboard::GetTasks(CTaskFile& tasks, const CString& sID)
 {
+	return GetTasks(tasks, sID, CDWordArray());
+}
+
+int CTaskClipboard::GetTasks(CTaskFile& tasks, const CString& sID, CDWordArray& aSelTaskIDs)
+{
 	if (IsEmpty())
 		return 0;
 
-	CString sXML = CClipboard().GetText(GetTaskClipFmt()); 
+	CClipboard cb;
+	CString sXML = cb.GetText(GetTaskClipFmt()); 
 	
-	if (!tasks.LoadContent(sXML))
+	if (!tasks.LoadContent(sXML) || !tasks.GetTaskCount())
 		return 0;
 
+	aSelTaskIDs.Copy(s_aSelTaskIDs);
+
+	// Remove task references if the clip IDs do not match
 	CString sClipID = (sID.IsEmpty() ? DEF_CLIPID : sID);
 
-	// remove task references if the clip IDs do not match
 	if (sClipID.CompareNoCase(GetClipID()) != 0)
-		RemoveTaskReferences(tasks, tasks.GetFirstTask(), TRUE);
+	{
+		CDWordSet mapSelTaskIDs;
+		mapSelTaskIDs.CopyFrom(aSelTaskIDs);
+
+		RemoveTaskReferences(tasks, tasks.GetFirstTask(), TRUE, mapSelTaskIDs);
+
+		// Sync returned task IDs
+		int nID = aSelTaskIDs.GetSize();
+
+		while (nID--)
+		{
+			if (!mapSelTaskIDs.Has(aSelTaskIDs[nID]))
+				aSelTaskIDs.RemoveAt(nID);
+		}
+	}
 
 	return tasks.GetTaskCount();
 }
@@ -89,13 +119,15 @@ int CTaskClipboard::GetTaskCount(const CString& sID)
 	return GetTasks(unused, sID);
 }
 
-void CTaskClipboard::RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOOL bAndSiblings)
+void CTaskClipboard::RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOOL bAndSiblings, CDWordSet& mapSelTaskIDs)
 {
 	if (!hTask)
 		return;
 
-	// handle next sibling first in case we want to delete hTask
-	// WITHOUT RECURSION
+	// process children first before their parent is potentially removed
+	RemoveTaskReferences(tasks, tasks.GetFirstTask(hTask), TRUE, mapSelTaskIDs);
+
+	// Handle siblings WITHOUT RECURSION
 	if (bAndSiblings)
 	{
 		HTASKITEM hSibling = tasks.GetNextTask(hTask);
@@ -106,20 +138,17 @@ void CTaskClipboard::RemoveTaskReferences(CTaskFile& tasks, HTASKITEM hTask, BOO
 			HTASKITEM hNextSibling = tasks.GetNextTask(hSibling);
 
 			// FALSE == don't recurse on siblings
-			RemoveTaskReferences(tasks, hSibling, FALSE);
+			RemoveTaskReferences(tasks, hSibling, FALSE, mapSelTaskIDs);
 			
 			hSibling = hNextSibling;
 		}
 	}
 
 	// delete if reference
-	if (tasks.GetTaskReferenceID(hTask))
+	if (tasks.GetTaskReferenceID(hTask) > 0)
 	{
+		mapSelTaskIDs.Remove(tasks.GetTaskID(hTask));
 		tasks.DeleteTask(hTask);
-	}
-	else // process children
-	{
-		RemoveTaskReferences(tasks, tasks.GetFirstTask(hTask), TRUE);
 	}
 }
 
@@ -130,13 +159,13 @@ CString CTaskClipboard::GetClipID()
 
 UINT CTaskClipboard::GetTaskClipFmt()
 {
-	static UINT nClip = ::RegisterClipboardFormat(TDL_CLIPFMTTASKS);
+	static UINT nClip = ::RegisterClipboardFormat(TDLCF_TASKS);
 	return nClip;
 }
 
 UINT CTaskClipboard::GetIDClipFmt()
 {
-	static UINT nClip = ::RegisterClipboardFormat(TDL_CLIPFMTID);
+	static UINT nClip = ::RegisterClipboardFormat(TDLCF_ID);
 	return nClip;
 }
 
