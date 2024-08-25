@@ -121,9 +121,9 @@ void CTDLFindTaskExpressionListCtrl::PreSubclassWindow()
 	ShowGrid(TRUE, TRUE);
 
 	AddCol(CEnString(IDS_FT_ATTRIB), 120);
-	AddCol(CEnString(IDS_FT_MATCHES), 160, ILCT_DROPLIST);
+	AddCol(CEnString(IDS_FT_MATCHES), 160, ILCT_COMBO);
 	AddCol(CEnString(IDS_FT_VALUE), 130, ILCT_TEXT); // overridden in GetCellType()
-	AddCol(CEnString(IDS_FT_ANDOR), 60, ILCT_DROPLIST);
+	AddCol(CEnString(IDS_FT_ANDOR), 60, ILCT_COMBO);
 	SetView(LVS_REPORT);
 
 	AutoAdd(TRUE, FALSE);
@@ -438,12 +438,12 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 	switch (nCol)
 	{
 	case ATTRIB_COL:
-		return ILCT_DROPLIST;
+		return ILCT_COMBO;
 
 	case OPERATOR_COL:
 		if (!rule.AttributeIs(TDCA_NONE))
 		{
-			return ILCT_DROPLIST;
+			return ILCT_COMBO;
 		}
 		break;
 
@@ -471,7 +471,7 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 					GET_DEF_RET(m_aAttribDefs, nAttribID, pDef, ILCT_BROWSE);
 
 					if (pDef->IsList())
-						return ILCT_DROPLIST;
+						return ILCT_COMBO;
 				}
 				return ILCT_BROWSE;
 
@@ -483,7 +483,7 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 				break;
 
 			case FT_RECURRENCE:
-				return ILCT_DROPLIST;
+				return ILCT_COMBO;
 
 			default:
 				switch (nAttribID)
@@ -497,7 +497,7 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 				case TDCA_PRIORITY:
 				case TDCA_RISK:
 				case TDCA_COMMENTSFORMAT:
-					return ILCT_DROPLIST;
+					return ILCT_COMBO;
 
 				default:
 					if (TDCCUSTOMATTRIBUTEDEFINITION::IsCustomAttribute(nAttribID) && m_aAttribDefs.GetSize())
@@ -506,7 +506,7 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 						GET_DEF_ALT(m_aAttribDefs, nAttribID, pDef, break);
 
 						if (pDef->IsList())
-							return ILCT_DROPLIST;
+							return ILCT_COMBO;
 
 					}
 					break;
@@ -516,7 +516,7 @@ IL_COLUMNTYPE CTDLFindTaskExpressionListCtrl::GetCellType(int nRow, int nCol) co
 		break;
 
 	case ANDOR_COL:
-		return ILCT_DROPLIST;
+		return ILCT_COMBO;
 	}
 
 	// all else

@@ -761,6 +761,7 @@ DWORD GetSysColorOrBrush(int nColor, BOOL bColor)
 		nTrueColor = COLOR_WINDOW;
 		break;
 
+#ifdef _DEBUG
 	case COLOR_ACTIVEBORDER:
 	case COLOR_INACTIVEBORDER:
 	case COLOR_INACTIVECAPTION:	
@@ -775,8 +776,8 @@ DWORD GetSysColorOrBrush(int nColor, BOOL bColor)
 // 	case COLOR_MENUHILIGHT:
 // 	case COLOR_MENUBAR:
 	case COLOR_BACKGROUND:
-		// TODO
 		RETURN_STATIC_COLOR_OR_BRUSH(colorRed);
+#endif
 	}
 
 	if (bColor)

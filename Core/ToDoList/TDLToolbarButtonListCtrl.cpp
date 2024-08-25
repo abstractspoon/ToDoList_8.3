@@ -103,7 +103,7 @@ void CTDLToolbarButtonListCtrl::InitState()
 
 	VERIFY(m_cbMenuItems.Initialise(menu, IDS_TOOLBARMENUSEPARATOR));
 
-	AddCol(_T("Menu Item"), GraphicsMisc::ScaleByDPIFactor(350), ILCT_DROPLIST);
+	AddCol(_T("Menu Item"), GraphicsMisc::ScaleByDPIFactor(350), ILCT_COMBO);
 	AddCol(_T("Image"), GraphicsMisc::ScaleByDPIFactor(75), ILCT_BROWSE);
 
 	SetAutoRowPrompt(CEnString(IDS_NEW_TOOLBARBUTTON));
