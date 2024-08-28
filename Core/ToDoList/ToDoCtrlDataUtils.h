@@ -198,14 +198,13 @@ public:
 	CString GetTimeOnly(const COleDateTime& date, TDC_DATE nDate) const;
 	CString GetCost(double dCost) const;
 
+	CString FormatDate(const COleDateTime& date) const;
+
 protected:
 	const CToDoCtrlData& m_data;
 	const CContentMgr& m_mgrContent;
 
 	CTDCTaskCalculator m_calculator;
-	
-protected:
-	CString FormatDate(const COleDateTime& date) const;
 };
 
 //////////////////////////////////////////////////////////////////////

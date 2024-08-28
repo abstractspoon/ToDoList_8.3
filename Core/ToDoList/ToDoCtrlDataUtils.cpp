@@ -3711,6 +3711,9 @@ CString CTDCTaskFormatter::FormatDate(const COleDateTime& date) const
 	if (CDateHelper::DateHasTime(date))
 		dwDateFmt |= DHFD_TIME | DHFD_NOSEC;
 
+	if (m_data.HasStyle(TDCS_SHOWWEEKDAYINDATES))
+		dwDateFmt |= DHFD_DOW;
+
 	return CDateHelper::FormatDate(date, dwDateFmt);
 }
 

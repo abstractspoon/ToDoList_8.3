@@ -3872,6 +3872,16 @@ CString CTDLTaskCtrlBase::FormatTaskDate(const TODOITEM* pTDI, const TODOSTRUCTU
 	case TDCD_DUE:		return FormatDate(m_calculator.GetTaskDueDate(pTDI, pTDS), nDate);
 	case TDCD_LASTMOD:	return FormatDate(m_calculator.GetTaskLastModifiedDate(pTDI, pTDS), nDate);
 
+	case TDCC_REMINDER:
+		{
+			time_t tRem = GetTaskReminder(m_data.GetTrueTaskID(pTDS->GetTaskID()));
+
+			if ((tRem != 0) && (tRem != -1))
+				return FormatDate(date, nDate);
+		}
+		break;
+
+
 	default:
 		ASSERT(0);
 		break;
@@ -3965,21 +3975,12 @@ CString CTDLTaskCtrlBase::GetTaskColumnText(DWORD dwTaskID, const TODOITEM* pTDI
 		case TDCC_DUEDATE:
 		case TDCC_DONEDATE:
 		case TDCC_CREATIONDATE:
-		case TDCC_LASTMODDATE:	return FormatTaskDate(pTDI, pTDS, TDC::MapColumnToDate(nColID));
+		case TDCC_LASTMODDATE:
+		case TDCC_REMINDER:		return FormatTaskDate(pTDI, pTDS, TDC::MapColumnToDate(nColID));
 
 		case TDCC_DEPENDENCY:	return pTDI->aDependencies.Format(_T("+"));
 		case TDCC_FILELINK:		return Misc::FormatArray(pTDI->aFileLinks, '+');
 		case TDCC_PRIORITY:		return m_formatter.GetTaskPriority(pTDI, pTDS, FALSE);
-
-		case TDCC_REMINDER:
-			{
-				time_t tRem = GetTaskReminder(m_data.GetTrueTaskID(dwTaskID));
-
-				// Reminder must be set and start/due date must be set
-				if ((tRem != 0) && (tRem != -1))
-					return FormatDate(COleDateTime(tRem), TDCD_REMINDER);
-			}
-			break;
 
 		default:
 			if (TDCCUSTOMATTRIBUTEDEFINITION::IsCustomColumn(nColID))

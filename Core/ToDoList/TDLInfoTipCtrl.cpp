@@ -273,6 +273,16 @@ int CTDLInfoTipCtrl::BuildSortedAttributeArray(DWORD dwTaskID,
 		ADDINFOITEM(TDCA_DUEDATE, IDS_TDLBC_DUEDATE, m_formatter.GetTaskDueDate(pTDI, pTDS));
 	}
 
+	if (mapAttrib.Has(TDCA_REMINDER))
+	{
+		time_t tRem = GetOwner()->SendMessage(WM_TDCM_GETTASKREMINDER, (WPARAM)GetSafeHwnd(), dwTaskID);
+
+		if (tRem)
+		{
+			ADDINFOITEM(TDCA_REMINDER, IDS_TDLBC_REMINDER, m_formatter.FormatDate(tRem));
+		}
+	}
+
 	if (mapAttrib.Has(TDCA_DEPENDENCY))
 	{
 		CDWordArray aDependents;
