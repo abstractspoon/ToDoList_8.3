@@ -519,7 +519,7 @@ DWORD CKanbanWnd::HitTestTask(POINT ptScreen, IUI_HITTESTREASON /*nReason*/) con
 	return m_ctrlKanban.HitTestTask(ptScreen);
 }
 
-bool CKanbanWnd::SelectTask(DWORD dwTaskID, bool bTaskLink)
+bool CKanbanWnd::SelectTask(DWORD dwTaskID, bool /*bTaskLink*/)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	
