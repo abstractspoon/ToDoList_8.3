@@ -1200,8 +1200,27 @@ int TODOITEM::CalcNextOccurrences(const COleDateTimeRange& dtRange, CArray<COleD
 	CString sExtRange = dtExtended.Format();
 #endif
 
-	BOOL bDueDate = (trRecurrence.nRecalcFrom != TDIRO_STARTDATE);
-	COleDateTime dtCur = (bDueDate ? dateDue : dateStart);
+	// Get the date from which to calculate the next occurrences
+	COleDateTime dtCur;
+
+	switch (trRecurrence.nRecalcFrom)
+	{
+	case TDIRO_STARTDATE:
+		dtCur = dateStart;
+		break;
+
+	case TDIRO_DUEDATE:
+		dtCur = dateDue;
+		break;
+
+	case TDIRO_DONEDATE:
+		dtCur = CDateHelper::GetDate(DHD_TODAY);
+		break;
+
+	default:
+		ASSERT(0);
+		return 0;
+	}
 
 	CArray<double, double&> aDates;
 	int nNumOccur = trRecurrence.CalcNextOccurrences(dtCur, dtExtended, aDates);
@@ -1224,7 +1243,7 @@ int TODOITEM::CalcNextOccurrences(const COleDateTimeRange& dtRange, CArray<COleD
 
 		double dDurationInMonths = CDateHelper().CalcDuration(dateStart, dateDue, DHU_MONTHS, TRUE);
 
-		if (bDueDate)
+		if (trRecurrence.nRecalcFrom != TDIRO_STARTDATE)
 		{
 			// Tasks of one or more exact month's duration need special handling
 			if (dDurationInMonths == (int)dDurationInMonths)
@@ -1240,8 +1259,18 @@ int TODOITEM::CalcNextOccurrences(const COleDateTimeRange& dtRange, CArray<COleD
 					nDaysOffset++; // we want the day after
 			}
 
+			// Special handling if offsetting from completion date
+			if (trRecurrence.nRecalcFrom == TDIRO_DONEDATE)
+			{
+				// Offset by the difference between the original due date
+				// and the completion date
+				nDaysOffset += (int)Misc::Round(dtCur.m_dt - dateDue.m_dt, 4);
+			}
+
 			COleDateTime dtNewStart = dateStart;
-			VERIFY(CDateHelper().OffsetDate(dtNewStart, nDaysOffset, DHU_DAYS));
+
+			if (nDaysOffset != 0)
+				VERIFY(CDateHelper().OffsetDate(dtNewStart, nDaysOffset, DHU_DAYS));
 
 			ASSERT((dtNewStart.m_dt <= dDate) ||
 					(CDateHelper::IsSameDay(dDate, dtNewStart) && !CDateHelper::DateHasTime(dDate)));
