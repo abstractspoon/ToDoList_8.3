@@ -1667,7 +1667,7 @@ BOOL CTDLTaskTreeCtrl::GetItemTitleRect(HTREEITEM hti, TDC_LABELRECT nArea, CRec
 		if (pDC && szTitle)
 		{
 			rect.right = (rect.left + pDC->GetTextExtent(szTitle).cx);
-			rect.right = min(rect.right, nHdrWidth);
+			rect.right = min(rect.right + 3, nHdrWidth);
 		}
 		else
 		{
