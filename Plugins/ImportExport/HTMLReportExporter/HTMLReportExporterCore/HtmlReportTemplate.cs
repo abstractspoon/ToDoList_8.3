@@ -588,7 +588,7 @@ namespace HTMLReportExporter
 					{
 						var attribVal = task.GetCustomAttributeValue(attrib.Key, true);
 						
-						row = ReplacePlaceholder(row, attribVal, attrib.Key, depth, !task.IsParent());
+						row = ReplacePlaceholder(row, attribVal, attrib.Key.ToLower(), depth, !task.IsParent());
 					}
 
 					row = row.Replace(ColorPlaceholder, task.GetTextForeWebColor());
