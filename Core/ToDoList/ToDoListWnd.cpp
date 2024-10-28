@@ -13466,8 +13466,7 @@ void CToDoListWnd::OnTasklistCustomColumns()
 	{
 		CTDLCustomAttributeDlg dialog(tdc.GetFilePath(),
 									  tdc.GetCustomAttributeDefs(),
-									  tdc.GetTaskIconImageList(),
-									  tdc.GetCheckImageList());
+									  tdc.GetTaskIconImageList());
 
 		if (dialog.DoModal() == IDOK)
 		{
