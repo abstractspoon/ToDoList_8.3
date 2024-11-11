@@ -114,7 +114,7 @@ namespace unvell.ReoGrid
 		/// <summary>
 		/// Event raised when grid loaded from file.
 		/// </summary>
-		public event EventHandler<FileLoadedEventArgs> FileLoaded;
+		//public event EventHandler<FileLoadedEventArgs> FileLoaded;
 
 		#endregion // Load
 
@@ -758,10 +758,10 @@ namespace unvell.ReoGrid
 				}
 				else
 				{
-					cellValue = xmlCell.data;
+					cellValue = xmlCell.data.Replace("\n", "\r\n");
 				}
 #else
-				cellValue = xmlCell.data;
+				cellValue = xmlCell.data.Replace("\n", "\r\n");
 #endif // FORMULA
 
 				// data or formula

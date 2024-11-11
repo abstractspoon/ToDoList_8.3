@@ -101,6 +101,8 @@ namespace SpreadsheetContentControl
 				e.Worksheet.CellMouseMove -= new EventHandler<CellMouseEventArgs>(OnCellMouseMove);
 			};
 
+			this.SizeChanged += (s, e) => Invalidate(true);
+
 			AllowDrop = true;
 		}
 
@@ -471,6 +473,19 @@ namespace SpreadsheetContentControl
 				NotifyParentContentChange();
 
 			return numChanges;
+		}
+
+		public void SavePreferences(Preferences prefs, String key)
+		{
+			prefs.WriteProfileInt(key, "FormulaHeight", this.FormulaBar.Height);
+		}
+
+		public void LoadPreferences(Preferences prefs, String key)
+		{
+			int nHeight = prefs.GetProfileInt(key, "FormulaHeight", -1);
+
+			if (nHeight > 0)
+				this.FormulaBar.Height = nHeight;
 		}
 
 		public bool ProcessMessage(IntPtr hwnd, UInt32 message, UInt32 wParam, UInt32 lParam, UInt32 time, Int32 xPos, Int32 yPos)
