@@ -339,7 +339,6 @@ BEGIN_MESSAGE_MAP(CToDoListWnd, CFrameWnd)
 	ON_COMMAND(ID_EDIT_SPELLCHECKTITLE, OnSpellchecktitle)
 	ON_COMMAND(ID_EDIT_TASKCOLOR, OnEditTaskcolor)
 	ON_COMMAND(ID_EDIT_TOGGLETASKDONE, OnEditToggleTaskDone)
-	ON_COMMAND(ID_EDIT_TASKTEXT, OnEditTasktext)
 	ON_COMMAND(ID_EDIT_UNDO, OnEditUndo)
 	ON_COMMAND(ID_EXIT, OnExit)
 	ON_COMMAND(ID_FILE_CHANGEPASSWORD, OnFileChangePassword)
@@ -787,6 +786,14 @@ BOOL CToDoListWnd::OnCommand(WPARAM wParam, LPARAM lParam)
 			while(CAcceleratorString::RemoveAccelerator(sMenuItem));
 
 		FileMisc::LogText(_T("CToDoListWnd::OnCommand(%s)"), sMenuItem);
+	}
+
+	// Special case
+	if (wParam == ID_EDIT_TASKTEXT)
+	{
+		// lParam tells us if this should be treated as a new-task edit
+		GetToDoCtrl().EditSelectedTaskTitle(lParam);
+		return TRUE;
 	}
 	
 	return CFrameWnd::OnCommand(wParam, lParam);
@@ -3240,11 +3247,6 @@ void CToDoListWnd::OnEditToggleTaskDone()
 	GetToDoCtrl().SetSelectedTaskCompletion(TDCTC_TOGGLE);
 }
 
-void CToDoListWnd::OnEditTasktext() 
-{
-	GetToDoCtrl().EditSelectedTaskTitle();
-}
-
 void CToDoListWnd::OnTrayIconClick(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	SetFocus();
@@ -5471,13 +5473,13 @@ BOOL CToDoListWnd::ProcessStartupOptions(const CTDCStartupOptions& startup, BOOL
 	else if (startup.HasFlag(TLD_NEWTASK))
 	{
 		CEnString sNewTask;
-		BOOL bEditTask = FALSE;
+		BOOL bEditLabel = FALSE;
 
 		// we edit the task name if no name was supplied
 		if (!startup.GetNewTaskTitle(sNewTask))
 		{
 			sNewTask.LoadString(IDS_TASK);
-			bEditTask = TRUE;
+			bEditLabel = TRUE;
 		}
 
 		TDC_INSERTWHERE nWhere = TDC::MapInsertIDToInsertWhere(GetNewTaskCmdID()); // default
@@ -5509,9 +5511,9 @@ BOOL CToDoListWnd::ProcessStartupOptions(const CTDCStartupOptions& startup, BOOL
 			tdc.SetSelectedTaskDate(TDCD_CREATE, date);
 
 		// edit task title?
-		if (bEditTask)
+		if (bEditLabel)
 		{	
-			PostMessage(WM_COMMAND, ID_EDIT_TASKTEXT);
+			PostMessage(WM_COMMAND, ID_EDIT_TASKTEXT, TRUE); // TRUE -> New task
 			return TRUE;
 		}
 	}

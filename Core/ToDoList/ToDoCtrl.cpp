@@ -8505,7 +8505,7 @@ LRESULT CToDoCtrl::OnTDCColumnEditClick(WPARAM wParam, LPARAM lParam)
 	{
 	case TDCC_CLIENT:
 		ASSERT(CanEditSelectedTask(TDCA_TASKNAME, dwTaskID));
-		EditSelectedTaskTitle(FALSE);
+		EditSelectedTaskTitle();
 		break;
 		
 	case TDCC_DONE:

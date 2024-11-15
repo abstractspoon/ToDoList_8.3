@@ -454,7 +454,6 @@ protected:
 	afx_msg void OnEditAddFileLink();
 	afx_msg void OnEditTaskcolor();
 	afx_msg void OnEditToggleTaskDone();
-	afx_msg void OnEditTasktext();
 	afx_msg void OnEditTimeTrackTask();
 	afx_msg void OnExit();
 	afx_msg void OnExport();
